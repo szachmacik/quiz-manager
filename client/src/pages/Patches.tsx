@@ -25,7 +25,7 @@ export default function PatchesPage() {
     onSuccess: () => { utils.patches.list.invalidate(); toast.info("Poprawka odrzucona"); },
     onError: (e) => toast.error(e.message),
   });
-  const applyMutation = trpc.patches.applyPatch.useMutation({
+  const applyMutation = trpc.patches.executePatch.useMutation({
     onSuccess: () => { utils.patches.list.invalidate(); toast.success("Poprawka wdrożona na WordPress!"); },
     onError: (e) => toast.error(`Błąd wdrożenia: ${e.message}`),
   });

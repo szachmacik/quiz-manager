@@ -1,4 +1,4 @@
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser, users,
@@ -263,4 +263,110 @@ export async function getReport(id: number) {
   if (!db) return undefined;
   const r = await db.select().from(reports).where(eq(reports.id, id)).limit(1);
   return r[0];
+}
+
+// ─── App Settings ─────────────────────────────────────────────────────────────
+import { appSettings, scheduledSimulations, snapshotDiffs, syncLog, ScheduledSimulation, SnapshotDiff, SyncLog } from "../drizzle/schema";
+
+export async function getSetting(key: string): Promise<string | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const r = await db.select().from(appSettings).where(eq(appSettings.key, key)).limit(1);
+  return r[0]?.value ?? null;
+}
+
+export async function setSetting(key: string, value: string): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(appSettings).values({ key, value }).onDuplicateKeyUpdate({ set: { value } });
+}
+
+export async function getAllSettings(): Promise<Record<string, string>> {
+  const db = await getDb();
+  if (!db) return {};
+  const rows = await db.select().from(appSettings);
+  return Object.fromEntries(rows.map(r => [r.key, r.value ?? ""]));
+}
+
+// ─── Scheduled Simulations ────────────────────────────────────────────────────
+export async function createScheduledSimulation(data: Omit<ScheduledSimulation, "id" | "createdAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  const [result] = await db.insert(scheduledSimulations).values(data as any);
+  return (result as any).insertId as number;
+}
+
+export async function listScheduledSimulations() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(scheduledSimulations).orderBy(scheduledSimulations.scheduledAt);
+}
+
+export async function updateScheduledSimulation(id: number, data: Partial<ScheduledSimulation>) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(scheduledSimulations).set(data as any).where(eq(scheduledSimulations.id, id));
+}
+
+export async function getPendingScheduledSimulations() {
+  const db = await getDb();
+  if (!db) return [];
+  const now = new Date();
+  return db.select().from(scheduledSimulations)
+    .where(and(eq(scheduledSimulations.status, "pending"), lte(scheduledSimulations.scheduledAt, now)));
+}
+
+// ─── Snapshot Diffs ───────────────────────────────────────────────────────────
+export async function createSnapshotDiff(data: Omit<SnapshotDiff, "id" | "createdAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  const [result] = await db.insert(snapshotDiffs).values(data as any);
+  return (result as any).insertId as number;
+}
+
+export async function getSnapshotDiff(snapshotAId: number, snapshotBId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const r = await db.select().from(snapshotDiffs)
+    .where(and(eq(snapshotDiffs.snapshotAId, snapshotAId), eq(snapshotDiffs.snapshotBId, snapshotBId)))
+    .limit(1);
+  return r[0] ?? null;
+}
+
+// ─── Sync Log ─────────────────────────────────────────────────────────────────
+export async function addSyncLog(data: Omit<SyncLog, "id" | "createdAt">) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(syncLog).values(data as any);
+}
+
+export async function listSyncLog(connectionId?: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  if (connectionId) {
+    return db.select().from(syncLog).where(eq(syncLog.connectionId, connectionId)).orderBy(desc(syncLog.createdAt)).limit(limit);
+  }
+  return db.select().from(syncLog).orderBy(desc(syncLog.createdAt)).limit(limit);
+}
+
+// ─── Dashboard stats ──────────────────────────────────────────────────────────
+export async function getDashboardStats() {
+  const db = await getDb();
+  if (!db) return { connections: 0, snapshots: 0, simulations: 0, pendingPatches: 0, reviews: 0, lastSync: null };
+
+  const [connCount] = await db.select({ count: sql<number>`count(*)` }).from(wpConnections);
+  const [snapCount] = await db.select({ count: sql<number>`count(*)` }).from(quizSnapshots);
+  const [simCount] = await db.select({ count: sql<number>`count(*)` }).from(simulations);
+  const [patchCount] = await db.select({ count: sql<number>`count(*)` }).from(patchProposals).where(eq(patchProposals.status, "pending"));
+  const [reviewCount] = await db.select({ count: sql<number>`count(*)` }).from(aiReviews);
+  const lastSyncRow = await db.select().from(syncLog).orderBy(desc(syncLog.createdAt)).limit(1);
+
+  return {
+    connections: Number(connCount?.count ?? 0),
+    snapshots: Number(snapCount?.count ?? 0),
+    simulations: Number(simCount?.count ?? 0),
+    pendingPatches: Number(patchCount?.count ?? 0),
+    reviews: Number(reviewCount?.count ?? 0),
+    lastSync: lastSyncRow[0]?.createdAt ?? null,
+  };
 }

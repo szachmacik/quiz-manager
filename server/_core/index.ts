@@ -62,4 +62,10 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+import { startAutoSync } from "../autoSync";
+
+startServer().then(() => {
+  // Start auto-sync polling every 5 minutes
+  startAutoSync(5 * 60 * 1000);
+  console.log("[AutoSync] Started — polling every 5 minutes");
+}).catch(console.error);

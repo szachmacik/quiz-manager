@@ -13,7 +13,7 @@
 - [x] Protokół zatwierdzeń poprawek (propose → approve/reject → apply)
 - [x] Rollback poprawek (przywracanie oryginalnej wartości)
 - [x] Powiadomienia właściciela po zakończeniu symulacji/analizy AI
-- [ ] Auto-synchronizacja quizów (polling/webhook — do implementacji po podłączeniu WP)
+- [x] Auto-synchronizacja quizów (polling/webhook — do implementacji po podłączeniu WP)
 - [ ] Eksport raportów PDF
 
 ## Frontend
@@ -27,10 +27,34 @@
 - [x] Strona: Raporty (lista raportów, podgląd, generowanie)
 - [x] Strona: Propozycje poprawek (lista, before/after, zatwierdź/odrzuć/wdróż/cofnij)
 - [x] Real-time updates przez polling (symulacja live co 2s)
-- [ ] Strona: Ustawienia (konfiguracja domeny email agentów, liczba agentów — do dodania)
+- [x] Strona: Ustawienia (konfiguracja domeny email agentów, liczba agentów — do dodania)
 
 ## Testy
 - [x] Testy jednostkowe: WP connector (parseQuestionIds, buildSnapshotHash, generateRandomAnswers)
 - [x] Testy jednostkowe: auth.logout
 - [ ] Testy jednostkowe: silnik symulacji (do rozszerzenia)
 - [ ] Testy jednostkowe: moduł AI review (do rozszerzenia)
+
+## Rozbudowa autonomiczna (faza 2)
+
+### Backend
+- [x] Auto-sync polling — cykliczne sprawdzanie zmian w quizach WP (co N minut)
+- [x] Diff snapshotów — porównanie dwóch wersji quizu (dodane/usunięte/zmienione pytania)
+- [ ] Eksport raportów do PDF (manus-md-to-pdf lub HTML→PDF)
+- [ ] Tworzenie prywatnej strony testowej w WP przez REST API
+- [x] Harmonogram symulacji (cron-like: uruchom symulację o określonej godzinie)
+- [ ] Endpoint webhook dla WP (odbieranie powiadomień o zmianach quizów)
+- [ ] Statystyki zbiorcze (dashboard overview — liczby, trendy)
+- [ ] Eksport quizu do JSON/CSV (backup portability)
+
+### Frontend
+- [x] Panel ustawień (domena agentów, domyślna liczba, interwał auto-sync)
+- [x] Diff viewer — wizualne porównanie dwóch snapshotów
+- [x] Scheduler UI — planowanie symulacji z datą/godziną
+- [ ] Strona testowa WP — przycisk "Utwórz stronę testową" z podglądem shortcode
+- [ ] Powiadomienia właściciela — toast + badge w sidebar dla nowych propozycji poprawek
+- [ ] Eksport raportu PDF — przycisk na stronie raportów
+- [ ] Strona główna dashboard — wykresy trendów, ostatnie aktywności
+- [ ] Kopiowanie shortcode do schowka jednym kliknięciem
+- [ ] Filtrowanie i sortowanie list (quizy, symulacje, raporty)
+- [ ] Status badge auto-sync w sidebar (ostatnia synchronizacja)

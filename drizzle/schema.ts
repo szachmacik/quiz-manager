@@ -177,6 +177,57 @@ export const reports = mysqlTable("reports", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+// ─── App Settings ───────────────────────────────────────────────────────────
+export const appSettings = mysqlTable("app_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  key: varchar("key", { length: 128 }).notNull().unique(),
+  value: text("value"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// ─── Scheduled simulations ───────────────────────────────────────────────────
+export const scheduledSimulations = mysqlTable("scheduled_simulations", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  snapshotId: int("snapshotId").notNull(),
+  connectionId: int("connectionId").notNull(),
+  agentDomain: varchar("agentDomain", { length: 255 }).notNull(),
+  agentCount: int("agentCount").default(100).notNull(),
+  concurrency: int("concurrency").default(10).notNull(),
+  delayMs: int("delayMs").default(500),
+  strategy: mysqlEnum("strategy", ["random", "all_correct", "all_wrong", "mixed"]).default("random").notNull(),
+  scheduledAt: timestamp("scheduledAt").notNull(),
+  status: mysqlEnum("status", ["pending", "triggered", "cancelled"]).default("pending").notNull(),
+  triggeredSimulationId: int("triggeredSimulationId"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ─── Snapshot diffs ───────────────────────────────────────────────────────────
+export const snapshotDiffs = mysqlTable("snapshot_diffs", {
+  id: int("id").autoincrement().primaryKey(),
+  snapshotAId: int("snapshotAId").notNull(),
+  snapshotBId: int("snapshotBId").notNull(),
+  addedQuestions: int("addedQuestions").default(0),
+  removedQuestions: int("removedQuestions").default(0),
+  modifiedQuestions: int("modifiedQuestions").default(0),
+  addedAnswers: int("addedAnswers").default(0),
+  removedAnswers: int("removedAnswers").default(0),
+  modifiedAnswers: int("modifiedAnswers").default(0),
+  diffData: json("diffData"), // detailed diff per question/answer
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ─── Auto-sync log ────────────────────────────────────────────────────────────
+export const syncLog = mysqlTable("sync_log", {
+  id: int("id").autoincrement().primaryKey(),
+  connectionId: int("connectionId").notNull(),
+  wpQuizId: int("wpQuizId"),
+  status: mysqlEnum("status", ["ok", "changed", "error", "no_change"]).default("ok").notNull(),
+  snapshotId: int("snapshotId"),
+  message: text("message"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
@@ -189,3 +240,7 @@ export type Simulation = typeof simulations.$inferSelect;
 export type SimulationAgent = typeof simulationAgents.$inferSelect;
 export type PatchProposal = typeof patchProposals.$inferSelect;
 export type Report = typeof reports.$inferSelect;
+export type AppSetting = typeof appSettings.$inferSelect;
+export type ScheduledSimulation = typeof scheduledSimulations.$inferSelect;
+export type SnapshotDiff = typeof snapshotDiffs.$inferSelect;
+export type SyncLog = typeof syncLog.$inferSelect;

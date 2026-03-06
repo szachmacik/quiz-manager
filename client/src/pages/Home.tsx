@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { Link } from "wouter";
-import { Globe, Brain, Users, FileText, Shield, ArrowRight, Loader2 } from "lucide-react";
+import { Globe, Brain, Users, FileText, Shield, ArrowRight, Loader2, RefreshCw, CheckCircle2, AlertCircle, MinusCircle } from "lucide-react";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -12,6 +12,7 @@ export default function Home() {
   const { data: snapshots } = trpc.quizzes.listSnapshots.useQuery({}, { enabled: isAuthenticated });
   const { data: simulations } = trpc.simulations.list.useQuery({}, { enabled: isAuthenticated });
   const { data: patches } = trpc.patches.list.useQuery({}, { enabled: isAuthenticated });
+  const { data: syncLog } = trpc.settings.getSyncLog.useQuery({ limit: 5 }, { enabled: isAuthenticated, refetchInterval: 30000 });
 
   if (loading) {
     return (
@@ -164,6 +165,32 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Sync Log */}
+      {syncLog && syncLog.length > 0 && (
+        <Card className="border-border/50">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <RefreshCw className="w-4 h-4 text-primary" /> Ostatnia aktywność auto-sync
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {syncLog.map(log => {
+              const icon = log.status === "changed" ? <AlertCircle className="w-3 h-3 text-yellow-400" /> :
+                           log.status === "error" ? <AlertCircle className="w-3 h-3 text-red-400" /> :
+                           log.status === "no_change" ? <MinusCircle className="w-3 h-3 text-muted-foreground" /> :
+                           <CheckCircle2 className="w-3 h-3 text-green-400" />;
+              return (
+                <div key={log.id} className="flex items-center gap-2 text-xs">
+                  {icon}
+                  <span className="text-muted-foreground">{new Date(log.createdAt).toLocaleString("pl-PL")}</span>
+                  <span className="text-foreground">{log.message ?? log.status}</span>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Workflow */}
       <Card className="border-border/50">

@@ -16,6 +16,9 @@ import { WpApiClient, parseQuestionIds, buildSnapshotHash } from "./wpConnector"
 import { runAiReview } from "./aiReviewer";
 import { runSimulation, getSimulationState, cancelSimulation } from "./simulationEngine";
 import { notifyOwner } from "./_core/notification";
+import { settingsRouter } from "./routers/settingsRouter";
+import { scheduledSimulationsRouter } from "./routers/scheduledRouter";
+import { diffRouter } from "./routers/diffRouter";
 
 // ─── WordPress Connections ────────────────────────────────────────────────────
 const connectionsRouter = router({
@@ -381,7 +384,7 @@ const patchesRouter = router({
       return { success: true };
     }),
 
-  applyPatch: protectedProcedure
+  executePatch: protectedProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       const patch = await getPatchProposal(input.id);
@@ -520,6 +523,9 @@ export const appRouter = router({
   simulations: simulationsRouter,
   patches: patchesRouter,
   reports: reportsRouter,
+  settings: settingsRouter,
+  scheduled: scheduledSimulationsRouter,
+  diff: diffRouter,
 });
 
 export type AppRouter = typeof appRouter;

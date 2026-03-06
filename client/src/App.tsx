@@ -14,6 +14,9 @@ import SimulationsPage from "./pages/Simulations";
 import SimulationDetailPage from "./pages/SimulationDetail";
 import PatchesPage from "./pages/Patches";
 import ReportsPage from "./pages/Reports";
+import SettingsPage from "./pages/Settings";
+import SchedulerPage from "./pages/Scheduler";
+import DiffViewerPage from "./pages/DiffViewer";
 
 function Router() {
   return (
@@ -27,6 +30,9 @@ function Router() {
       <Route path="/simulations/:id" component={SimulationDetailPage} />
       <Route path="/patches" component={PatchesPage} />
       <Route path="/reports" component={ReportsPage} />
+      <Route path="/settings" component={SettingsPage} />
+      <Route path="/scheduler" component={SchedulerPage} />
+      <Route path="/diff" component={DiffViewerPage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
