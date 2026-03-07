@@ -22,6 +22,20 @@
       "when": 1772838919758,
       "tag": "0002_aberrant_stryfe",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1772848818293,
+      "tag": "0003_unusual_otto_octavius",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1772848951424,
+      "tag": "0004_productive_chronomancer",
+      "breakpoints": true
     }
   ]
 }

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users, Globe, FileText, Brain, Play, Wrench, BarChart2, Settings2, Calendar, GitCompare, RefreshCw } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Globe, FileText, Brain, Play, Wrench, BarChart2, Settings2, Calendar, GitCompare, RefreshCw, Shield, Video, Monitor } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -39,6 +39,9 @@ const menuItems = [
   { icon: GitCompare, label: "Porównaj snapshoty", path: "/diff" },
   { icon: Globe, label: "Strona testowa WP", path: "/test-page" },
   { icon: Calendar, label: "Harmonogram", path: "/scheduler" },
+  { icon: Shield, label: "Audyt Ustawień", path: "/settings-audit" },
+  { icon: Video, label: "Weryfikator Nagrań", path: "/video-verifier" },
+  { icon: Monitor, label: "Przeglądarka Quizu", path: "/quiz-browser" },
   { icon: Settings2, label: "Ustawienia", path: "/settings" },
 ];
 

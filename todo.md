@@ -92,3 +92,64 @@
 - [ ] Filtry i wyszukiwanie — Poprawki (po statusie: pending/approved/applied)
 - [ ] UX: status indicator połączenia WP w sidebarze
 - [ ] UX: podgląd quizu jako uczestnik (iframe preview na stronie testowej)
+
+## Rozbudowa autonomiczna v5
+
+### Audytor ustawień quizu AYS
+- [ ] Tabela quizSettingsAudits w schemacie bazy danych
+- [ ] Tabela competitionRules (regulamin + intencje twórcy) w schemacie
+- [ ] Tabela quizHistoricalSettings (historia ustawień poprzednich quizów) w schemacie
+- [ ] Backend: settingsAuditRouter — audyt godzin dostępności, zabezpieczeń, dyplomów, limitów
+- [ ] Backend: porównanie ustawień z quizami historycznymi (baza odniesienia)
+- [ ] Backend: analiza regulaminu przez AI jako baza intencji twórcy
+- [ ] Backend: wykrywanie niezgodności ustawień z regulaminem/historią
+- [ ] Frontend: strona QuizSettingsAudit.tsx — panel audytu ustawień
+- [ ] Frontend: formularz wprowadzania regulaminu konkursu
+- [ ] Frontend: raport niezgodności z sugestiami poprawek ustawień
+
+### Weryfikator nagrań wideo
+- [ ] Tabela videoVerifications w schemacie bazy danych
+- [ ] Backend: videoVerificationRouter — upload URL, analiza AI wideo
+- [ ] Backend: AI analiza wideo (LLM multimodal) — ocena samodzielności dziecka
+- [ ] Backend: wykrywanie anomalii (nagłe zmiany tempa, przerwy, obecność osoby trzeciej)
+- [ ] Backend: rozróżnienie pomocy technicznej vs merytorycznej
+- [ ] Backend: raport z oceną SAMODZIELNIE / WĄTPLIWE / INTERWENCJA
+- [ ] Frontend: strona VideoVerifier.tsx — dashboard weryfikatora nagrań
+- [ ] Frontend: formularz dodawania nagrania (URL Dropbox/Google Drive/link zewnętrzny)
+- [ ] Frontend: wyniki weryfikacji z timeline anomalii i uzasadnieniem AI
+
+## Rozbudowa autonomiczna v5 (rozszerzona)
+
+### Audytor ustawień quizu
+- [ ] settingsAuditRouter.ts — backend audytu ustawień AYS
+- [ ] competitionRulesRouter.ts — CRUD regulaminów konkursów
+- [ ] historicalSettingsRouter.ts — baza historycznych ustawień
+- [ ] AI analiza regulaminu → strukturyzacja intencji twórcy
+- [ ] Porównanie ustawień quizu z regulaminem i historią przez AI
+- [ ] QuizSettingsAudit.tsx — strona audytu ustawień
+- [ ] CompetitionRules.tsx — strona zarządzania regulaminami
+
+### Natywna przeglądarka quizu z telemetrią
+- [ ] Tabela telemetry_sessions w schemacie bazy danych
+- [ ] Tabela telemetry_events (każde zdarzenie behawioralne) w schemacie
+- [ ] Backend: telemetryRouter — zapis sesji i eventów
+- [ ] Frontend: QuizBrowser.tsx — natywna przeglądarka quizu (iframe WP + overlay telemetrii)
+- [ ] Telemetria: ruchy myszy (mousemove co 100ms)
+- [ ] Telemetria: kliknięcia (mousedown, mouseup, click z pozycją)
+- [ ] Telemetria: klawiatura (keydown, keyup — bez treści, tylko timing)
+- [ ] Telemetria: focus/blur na polach formularza
+- [ ] Telemetria: scroll position
+- [ ] Telemetria: czas między pytaniami
+- [ ] Telemetria: wykrywanie przełączania zakładek (visibilitychange)
+- [ ] Telemetria: wykrywanie copy-paste (clipboard events)
+- [ ] Telemetria: wykrywanie DevTools (window resize anomalies)
+- [ ] Nagrywanie sesji: canvas screenshot co 5s (opcjonalnie)
+- [ ] AI analiza telemetrii → raport behawioralny
+
+### Weryfikator nagrań wideo
+- [ ] videoVerificationRouter.ts — backend weryfikatora
+- [ ] AI analiza wideo przez URL (LLM multimodal z vision)
+- [ ] Wykrywanie anomalii: obecność drugiej osoby, podpowiedzi
+- [ ] Rozróżnienie: pomoc techniczna vs merytoryczna
+- [ ] VideoVerifier.tsx — strona weryfikatora nagrań
+- [ ] TelemetryDashboard.tsx — dashboard sesji telemetrycznych

@@ -4,37 +4,45 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import DashboardLayout from "./components/DashboardLayout";
 import Home from "./pages/Home";
-import ConnectionsPage from "./pages/Connections";
-import QuizzesPage from "./pages/Quizzes";
-import SnapshotDetailPage from "./pages/SnapshotDetail";
-import ReviewsPage from "./pages/Reviews";
-import SimulationsPage from "./pages/Simulations";
-import SimulationDetailPage from "./pages/SimulationDetail";
-import PatchesPage from "./pages/Patches";
-import ReportsPage from "./pages/Reports";
-import SettingsPage from "./pages/Settings";
+import Connections from "./pages/Connections";
+import Quizzes from "./pages/Quizzes";
+import SnapshotDetail from "./pages/SnapshotDetail";
+import Reviews from "./pages/Reviews";
+import Simulations from "./pages/Simulations";
+import SimulationDetail from "./pages/SimulationDetail";
+import Patches from "./pages/Patches";
+import Reports from "./pages/Reports";
+import Settings from "./pages/Settings";
 import Scheduler from "./pages/Scheduler";
+import DiffViewer from "./pages/DiffViewer";
 import TestPage from "./pages/TestPage";
-import DiffViewerPage from "./pages/DiffViewer";
+import QuizSettingsAudit from "./pages/QuizSettingsAudit";
+import VideoVerifier from "./pages/VideoVerifier";
+import QuizBrowser from "./pages/QuizBrowser";
+import SubmitVideo from "./pages/SubmitVideo";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/connections" component={ConnectionsPage} />
-      <Route path="/quizzes" component={QuizzesPage} />
-      <Route path="/snapshots/:id" component={SnapshotDetailPage} />
-      <Route path="/reviews" component={ReviewsPage} />
-      <Route path="/simulations" component={SimulationsPage} />
-      <Route path="/simulations/:id" component={SimulationDetailPage} />
-      <Route path="/patches" component={PatchesPage} />
-      <Route path="/reports" component={ReportsPage} />
-      <Route path="/settings" component={SettingsPage} />
+      <Route path="/connections" component={Connections} />
+      <Route path="/quizzes" component={Quizzes} />
+      <Route path="/quizzes/snapshot/:id" component={SnapshotDetail} />
+      <Route path="/reviews" component={Reviews} />
+      <Route path="/simulations" component={Simulations} />
+      <Route path="/simulations/:id" component={SimulationDetail} />
+      <Route path="/patches" component={Patches} />
+      <Route path="/reports" component={Reports} />
+      <Route path="/settings" component={Settings} />
       <Route path="/scheduler" component={Scheduler} />
+      <Route path="/diff" component={DiffViewer} />
       <Route path="/test-page" component={TestPage} />
-      <Route path="/diff" component={DiffViewerPage} />
+      <Route path="/settings-audit" component={QuizSettingsAudit} />
+      <Route path="/video-verifier" component={VideoVerifier} />
+      <Route path="/quiz-browser" component={QuizBrowser} />
+      {/* Public route — no auth required */}
+      <Route path="/submit-video" component={SubmitVideo} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
@@ -47,9 +55,7 @@ function App() {
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
-          <DashboardLayout>
-            <Router />
-          </DashboardLayout>
+          <Router />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

@@ -21,8 +21,9 @@ import { scheduledSimulationsRouter } from "./routers/scheduledRouter";
 import { testPageRouter } from "./routers/testPageRouter";
 import { diffRouter } from "./routers/diffRouter";
 import { exportRouter } from "./routers/exportRouter";
-
-// ─── WordPress Connections ────────────────────────────────────────────────────
+import { settingsAuditRouter } from "./routers/settingsAuditRouter";
+import { videoVerificationRouter } from "./routers/videoVerificationRouter";
+// ─── WordPress Connectionss ────────────────────────────────────────────────────
 const connectionsRouter = router({
   list: protectedProcedure.query(() => listConnections()),
 
@@ -529,7 +530,8 @@ export const appRouter = router({
   scheduled: scheduledSimulationsRouter,
   diff: diffRouter,
   export: exportRouter,
-  testPage: testPageRouter,
+   testPage: testPageRouter,
+  settingsAudit: settingsAuditRouter,
+  videoVerification: videoVerificationRouter,
 });
-
 export type AppRouter = typeof appRouter;

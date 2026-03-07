@@ -228,6 +228,122 @@ export const syncLog = mysqlTable("sync_log", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+// ─── Telemetry Sessions (natywna przeglądarka) ─────────────────────────────────
+export const telemetrySessions = mysqlTable("telemetry_sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  sessionToken: varchar("sessionToken", { length: 128 }).notNull().unique(),
+  connectionId: int("connectionId"),
+  snapshotId: int("snapshotId"),
+  wpQuizId: int("wpQuizId"),
+  participantName: varchar("participantName", { length: 255 }),
+  participantEmail: varchar("participantEmail", { length: 320 }),
+  userAgent: text("userAgent"),
+  screenWidth: int("screenWidth"),
+  screenHeight: int("screenHeight"),
+  // Behavioral metrics
+  totalDurationMs: bigint("totalDurationMs", { mode: "number" }),
+  avgMouseSpeed: float("avgMouseSpeed"),
+  totalKeystrokes: int("totalKeystrokes").default(0),
+  totalClicks: int("totalClicks").default(0),
+  tabSwitchCount: int("tabSwitchCount").default(0),
+  copyPasteCount: int("copyPasteCount").default(0),
+  pauseCount: int("pauseCount").default(0), // pauses > 30s
+  avgTimeBetweenAnswersMs: float("avgTimeBetweenAnswersMs"),
+  // AI verdict
+  behaviorVerdict: mysqlEnum("behaviorVerdict", ["normal", "suspicious", "anomaly"]),
+  behaviorScore: float("behaviorScore"), // 0-100 (100 = very normal)
+  anomalies: json("anomalies"), // list of detected anomalies
+  aiAnalysis: json("aiAnalysis"),
+  status: mysqlEnum("status", ["active", "completed", "analysed"]).default("active").notNull(),
+  startedAt: timestamp("startedAt").defaultNow().notNull(),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const telemetryEvents = mysqlTable("telemetry_events", {
+  id: bigint("id", { mode: "number" }).autoincrement().primaryKey(),
+  sessionId: int("sessionId").notNull(),
+  eventType: varchar("eventType", { length: 64 }).notNull(), // mousemove, click, keydown, focus, blur, scroll, visibility, paste
+  timestampMs: bigint("timestampMs", { mode: "number" }).notNull(), // ms since session start
+  x: float("x"), // mouse X (normalized 0-1)
+  y: float("y"), // mouse Y (normalized 0-1)
+  targetElement: varchar("targetElement", { length: 128 }), // CSS selector
+  metadata: json("metadata"), // extra data per event type
+});
+
+// ─── Competition Rules (regulamin + intencje twórcy) ────────────────────────
+export const competitionRules = mysqlTable("competition_rules", {
+  id: int("id").autoincrement().primaryKey(),
+  connectionId: int("connectionId").notNull(),
+  name: varchar("name", { length: 255 }).notNull(), // np. "Konkurs Matematyczny 2025"
+  rulesText: text("rulesText"), // pełny regulamin wklejony przez użytkownika
+  intentNotes: text("intentNotes"), // dodatkowe intencje twórcy (np. "quiz dla dzieci 8-12 lat")
+  expectedStartTime: varchar("expectedStartTime", { length: 8 }), // "HH:MM"
+  expectedEndTime: varchar("expectedEndTime", { length: 8 }),
+  expectedDurationMin: int("expectedDurationMin"), // oczekiwany czas trwania quizu w minutach
+  requireAntiCopy: boolean("requireAntiCopy").default(true),
+  requireCaptcha: boolean("requireCaptcha").default(false),
+  requireEmailVerification: boolean("requireEmailVerification").default(true),
+  requireCertificate: boolean("requireCertificate").default(true),
+  maxAttempts: int("maxAttempts").default(1),
+  targetAgeGroup: varchar("targetAgeGroup", { length: 64 }), // np. "8-12 lat"
+  rawRulesJson: json("rawRulesJson"), // AI-parsed structured rules
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+// ─── Quiz Settings Audits ─────────────────────────────────────────────────────
+export const quizSettingsAudits = mysqlTable("quiz_settings_audits", {
+  id: int("id").autoincrement().primaryKey(),
+  snapshotId: int("snapshotId").notNull(),
+  connectionId: int("connectionId").notNull(),
+  rulesId: int("rulesId"), // powiązany regulamin (opcjonalny)
+  status: mysqlEnum("status", ["pending", "running", "completed", "failed"]).default("pending").notNull(),
+  overallScore: float("overallScore"), // 0-100
+  issuesFound: int("issuesFound").default(0),
+  warningsFound: int("warningsFound").default(0),
+  findings: json("findings"), // array of {category, severity, message, currentValue, expectedValue, suggestion}
+  settingsSnapshot: json("settingsSnapshot"), // pełne ustawienia quizu w momencie audytu
+  summary: text("summary"),
+  startedAt: timestamp("startedAt"),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+// ─── Historical Quiz Settings (baza odniesienia) ──────────────────────────────
+export const historicalQuizSettings = mysqlTable("historical_quiz_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  connectionId: int("connectionId").notNull(),
+  wpQuizId: int("wpQuizId").notNull(),
+  quizTitle: varchar("quizTitle", { length: 512 }),
+  settings: json("settings").notNull(), // pełne ustawienia AYS
+  notes: text("notes"), // np. "Konkurs 2024 — działał poprawnie"
+  recordedAt: timestamp("recordedAt").defaultNow().notNull(),
+});
+
+// ─── Video Verifications (weryfikator nagrań) ─────────────────────────────────
+export const videoVerifications = mysqlTable("video_verifications", {
+  id: int("id").autoincrement().primaryKey(),
+  connectionId: int("connectionId"),
+  snapshotId: int("snapshotId"),
+  participantName: varchar("participantName", { length: 255 }),
+  participantEmail: varchar("participantEmail", { length: 320 }),
+  videoUrl: text("videoUrl").notNull(), // URL do nagrania (Dropbox, Drive, bezpośredni link)
+  videoSource: mysqlEnum("videoSource", ["dropbox", "google_drive", "direct_url", "email_attachment"]).default("direct_url").notNull(),
+  status: mysqlEnum("status", ["pending", "processing", "completed", "failed"]).default("pending").notNull(),
+  verdict: mysqlEnum("verdict", ["independent", "suspicious", "intervention"]), // SAMODZIELNIE / WĄTPLIWE / INTERWENCJA
+  confidenceScore: float("confidenceScore"), // 0-100 pewność oceny
+  overallScore: float("overallScore"), // 0-100 ocena samodzielności
+  anomalies: json("anomalies"), // lista wykrytych anomalii z timestampami
+  aiAnalysis: json("aiAnalysis"), // pełna analiza AI
+  summary: text("summary"), // opis słowny
+  reviewerNotes: text("reviewerNotes"), // notatki manualne recenzenta
+  startedAt: timestamp("startedAt"),
+  completedAt: timestamp("completedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
@@ -244,3 +360,15 @@ export type AppSetting = typeof appSettings.$inferSelect;
 export type ScheduledSimulation = typeof scheduledSimulations.$inferSelect;
 export type SnapshotDiff = typeof snapshotDiffs.$inferSelect;
 export type SyncLog = typeof syncLog.$inferSelect;
+export type CompetitionRule = typeof competitionRules.$inferSelect;
+export type InsertCompetitionRule = typeof competitionRules.$inferInsert;
+export type QuizSettingsAudit = typeof quizSettingsAudits.$inferSelect;
+export type InsertQuizSettingsAudit = typeof quizSettingsAudits.$inferInsert;
+export type HistoricalQuizSetting = typeof historicalQuizSettings.$inferSelect;
+export type InsertHistoricalQuizSetting = typeof historicalQuizSettings.$inferInsert;
+export type VideoVerification = typeof videoVerifications.$inferSelect;
+export type InsertVideoVerification = typeof videoVerifications.$inferInsert;
+export type TelemetrySession = typeof telemetrySessions.$inferSelect;
+export type InsertTelemetrySession = typeof telemetrySessions.$inferInsert;
+export type TelemetryEvent = typeof telemetryEvents.$inferSelect;
+export type InsertTelemetryEvent = typeof telemetryEvents.$inferInsert;

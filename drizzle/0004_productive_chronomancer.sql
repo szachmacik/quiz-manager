@@ -1,0 +1,42 @@
+CREATE TABLE `telemetry_events` (
+	`id` bigint AUTO_INCREMENT NOT NULL,
+	`sessionId` int NOT NULL,
+	`eventType` varchar(64) NOT NULL,
+	`timestampMs` bigint NOT NULL,
+	`x` float,
+	`y` float,
+	`targetElement` varchar(128),
+	`metadata` json,
+	CONSTRAINT `telemetry_events_id` PRIMARY KEY(`id`)
+);
+--> statement-breakpoint
+CREATE TABLE `telemetry_sessions` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`sessionToken` varchar(128) NOT NULL,
+	`connectionId` int,
+	`snapshotId` int,
+	`wpQuizId` int,
+	`participantName` varchar(255),
+	`participantEmail` varchar(320),
+	`userAgent` text,
+	`screenWidth` int,
+	`screenHeight` int,
+	`totalDurationMs` bigint,
+	`avgMouseSpeed` float,
+	`totalKeystrokes` int DEFAULT 0,
+	`totalClicks` int DEFAULT 0,
+	`tabSwitchCount` int DEFAULT 0,
+	`copyPasteCount` int DEFAULT 0,
+	`pauseCount` int DEFAULT 0,
+	`avgTimeBetweenAnswersMs` float,
+	`behaviorVerdict` enum('normal','suspicious','anomaly'),
+	`behaviorScore` float,
+	`anomalies` json,
+	`aiAnalysis` json,
+	`status` enum('active','completed','analysed') NOT NULL DEFAULT 'active',
+	`startedAt` timestamp NOT NULL DEFAULT (now()),
+	`completedAt` timestamp,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	CONSTRAINT `telemetry_sessions_id` PRIMARY KEY(`id`),
+	CONSTRAINT `telemetry_sessions_sessionToken_unique` UNIQUE(`sessionToken`)
+);

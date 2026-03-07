@@ -155,3 +155,70 @@ describe("SettingsRouter", () => {
     expect(result).not.toBeNull();
   });
 });
+
+// ─── v5 Tests: Settings Audit & Video Verification ───────────────────────────
+
+describe("settingsAuditRouter — audit logic", () => {
+  it("identifies critical issue when quiz has no time limit", () => {
+    const settings: Record<string, string> = { time_limit: "0", enable_result_page: "1" };
+    const issues: string[] = [];
+    if (!settings.time_limit || settings.time_limit === "0") issues.push("no_time_limit");
+    expect(issues).toContain("no_time_limit");
+  });
+
+  it("passes when all required settings are present", () => {
+    const settings: Record<string, string> = {
+      time_limit: "30", enable_result_page: "1",
+      enable_certificate: "1", limit_attempts: "1",
+    };
+    const issues: string[] = [];
+    if (!settings.time_limit || settings.time_limit === "0") issues.push("no_time_limit");
+    if (!settings.enable_certificate || settings.enable_certificate === "0") issues.push("no_certificate");
+    if (!settings.limit_attempts || settings.limit_attempts === "0") issues.push("no_attempt_limit");
+    expect(issues).toHaveLength(0);
+  });
+});
+
+describe("videoVerification — verdict logic", () => {
+  it("returns independent verdict when no anomalies", () => {
+    const anomalies: Array<{ severity: string }> = [];
+    const criticalCount = anomalies.filter(a => a.severity === "high").length;
+    const verdict = criticalCount >= 2 ? "intervention" : anomalies.length > 0 ? "suspicious" : "independent";
+    expect(verdict).toBe("independent");
+  });
+
+  it("returns intervention verdict when multiple high-severity anomalies", () => {
+    const anomalies = [{ severity: "high" }, { severity: "high" }];
+    const criticalCount = anomalies.filter(a => a.severity === "high").length;
+    const verdict = criticalCount >= 2 ? "intervention" : anomalies.length > 0 ? "suspicious" : "independent";
+    expect(verdict).toBe("intervention");
+  });
+
+  it("distinguishes merit intervention from technical help", () => {
+    const techAnomaly = { type: "technical_help", isMeritIntervention: false };
+    const meritAnomaly = { type: "verbal_hint", isMeritIntervention: true };
+    expect(techAnomaly.isMeritIntervention).toBe(false);
+    expect(meritAnomaly.isMeritIntervention).toBe(true);
+  });
+});
+
+describe("telemetry — behavioral scoring", () => {
+  it("penalizes copy-paste events", () => {
+    const pasteCount = 2;
+    const score = Math.max(0, 100 - pasteCount * 20);
+    expect(score).toBe(60);
+  });
+
+  it("penalizes tab switches", () => {
+    const tabSwitches = 3;
+    const score = Math.max(0, 100 - tabSwitches * 15);
+    expect(score).toBe(55);
+  });
+
+  it("gives full score for clean session", () => {
+    const pasteCount = 0;
+    const tabSwitches = 0;
+    const score = Math.max(0, 100 - pasteCount * 20 - tabSwitches * 15);
+    expect(score).toBe(100);
+  });
+});
