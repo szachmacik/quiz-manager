@@ -208,3 +208,16 @@
 - [ ] Każda grupa ma inny profil behawioralny (zerówka = rodzic pisze, kl.1-2 = wsparcie rodzica normalne, kl.3-4 = samodzielność rosnąca, kl.5-6 = pełna samodzielność)
 - [ ] Progi czasowe i wzorce odpowiedzi dostosowane do wieku
 - [ ] Weryfikacja wideo: dla zerówki/kl.1 obecność rodzica jest NORMALNA i nie jest anomalią
+
+## Rozbudowa autonomiczna v7
+
+- [ ] Import uczestników z MailerLite API (router + UI)
+- [ ] Webpush powiadomienia (Service Worker + VAPID + backend)
+- [ ] Checklista pre-contest (24h przed startem — automatyczna weryfikacja)
+- [ ] Google Drive sync nagrań (rclone integration)
+- [ ] Historia quizu — timeline wszystkich operacji per quiz
+- [ ] Eksport wyników finalnych do PDF
+- [ ] Panel "Przed konkursem" z automatyczną weryfikacją
+- [ ] Optymalizacja UX nawigacji (grupowanie sekcji w sidebar)
+- [ ] Strona główna — sekcja "Wymagane akcje" (co wymaga uwagi)
+- [ ] Testy v7

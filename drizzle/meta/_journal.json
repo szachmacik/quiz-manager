@@ -78,6 +78,13 @@
       "when": 1772851238905,
       "tag": "0010_curved_stephen_strange",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1772884513019,
+      "tag": "0011_ordinary_karnak",
+      "breakpoints": true
     }
   ]
 }

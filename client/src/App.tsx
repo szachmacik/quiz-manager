@@ -26,6 +26,9 @@ import OfflineContest from "./pages/OfflineContest";
 import AnomalyDetector from "./pages/AnomalyDetector";
 import RiskKnowledgeBase from "./pages/RiskKnowledgeBase";
 import BehavioralProfiles from "./pages/BehavioralProfiles";
+import MailerLiteImport from "./pages/MailerLiteImport";
+import PreContest from "./pages/PreContest";
+import QuizHistory from "./pages/QuizHistory";
 
 function Router() {
   return (
@@ -51,6 +54,9 @@ function Router() {
       <Route path="/anomaly-detector" component={AnomalyDetector} />
       <Route path="/risk-kb" component={RiskKnowledgeBase} />
       <Route path="/behavioral-profiles" component={BehavioralProfiles} />
+      <Route path="/mailerlite" component={MailerLiteImport} />
+      <Route path="/pre-contest" component={PreContest} />
+      <Route path="/quiz-history" component={QuizHistory} />
       {/* Public route — no auth required */}
       <Route path="/submit-video" component={SubmitVideo} />
       <Route path="/404" component={NotFound} />

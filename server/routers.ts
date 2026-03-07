@@ -28,6 +28,10 @@ import { behavioralProfileRouter } from "./routers/behavioralProfileRouter";
 import { resultsRouter } from "./routers/resultsRouter";
 import { offlineRouter } from "./routers/offlineRouter";
 import { anomalyRouter } from "./routers/anomalyRouter";
+import { mailerLiteRouter } from "./routers/mailerLiteRouter";
+import { webpushRouter } from "./routers/webpushRouter";
+import { preContestRouter } from "./routers/preContestRouter";
+import { quizHistoryRouter } from "./routers/quizHistoryRouter";
 // ─── WordPress Connectionss ────────────────────────────────────────────────────
 const connectionsRouter = router({
   list: protectedProcedure.query(() => listConnections()),
@@ -543,5 +547,9 @@ export const appRouter = router({
   anomaly: anomalyRouter,
   risks: riskRouter,
   behavioral: behavioralProfileRouter,
+  mailerLite: mailerLiteRouter,
+  webpush: webpushRouter,
+  preContest: preContestRouter,
+  quizHistory: quizHistoryRouter,
 });
 export type AppRouter = typeof appRouter;

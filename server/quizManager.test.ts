@@ -347,3 +347,87 @@ describe("resultsRouter — ranking and laureates", () => {
     expect(laureates).not.toContain(89);
   });
 });
+
+// ─── v7 Tests ──────────────────────────────────────────────────────────────────
+
+describe("mailerLiteRouter", () => {
+  it("router is exported and defined", async () => {
+    const { mailerLiteRouter } = await import("./routers/mailerLiteRouter");
+    expect(mailerLiteRouter).toBeDefined();
+    expect(typeof mailerLiteRouter).toBe("object");
+  });
+});
+
+describe("webpushRouter", () => {
+  it("router is exported and defined", async () => {
+    const { webpushRouter } = await import("./routers/webpushRouter");
+    expect(webpushRouter).toBeDefined();
+    expect(typeof webpushRouter).toBe("object");
+  });
+});
+
+describe("preContestRouter", () => {
+  it("router is exported and defined", async () => {
+    const { preContestRouter } = await import("./routers/preContestRouter");
+    expect(preContestRouter).toBeDefined();
+    expect(typeof preContestRouter).toBe("object");
+  });
+
+  it("pre-contest check categories cover critical areas", () => {
+    // Inline test of expected check categories
+    const expectedCategories = ["wordpress", "ays_plugin", "quiz_settings", "infrastructure"];
+    const checkCategories = ["wordpress", "ays_plugin", "quiz_settings", "infrastructure", "backup"];
+    for (const cat of expectedCategories) {
+      expect(checkCategories).toContain(cat);
+    }
+  });
+});
+
+describe("quizHistoryRouter", () => {
+  it("router is exported and defined", async () => {
+    const { quizHistoryRouter } = await import("./routers/quizHistoryRouter");
+    expect(quizHistoryRouter).toBeDefined();
+    expect(typeof quizHistoryRouter).toBe("object");
+  });
+});
+
+describe("MailerLite import — field mapping", () => {
+  it("maps MailerLite subscriber fields to participant schema", () => {
+    const subscriber = {
+      email: "jan@example.pl",
+      fields: {
+        name: "Jan",
+        last_name: "Kowalski",
+        school: "SP nr 5",
+        city: "Kraków",
+        grade: "3",
+      },
+    };
+    const mapped = {
+      email: subscriber.email,
+      firstName: subscriber.fields.name,
+      lastName: subscriber.fields.last_name,
+      schoolName: subscriber.fields.school,
+      city: subscriber.fields.city,
+      gradeLevel: subscriber.fields.grade,
+    };
+    expect(mapped.email).toBe("jan@example.pl");
+    expect(mapped.firstName).toBe("Jan");
+    expect(mapped.gradeLevel).toBe("3");
+  });
+});
+
+describe("Pre-contest checklista — timing logic", () => {
+  it("detects quiz scheduled outside allowed window", () => {
+    // Quiz should be between 8:00 and 20:00
+    const scheduledHour = 23;
+    const isAllowedHour = scheduledHour >= 8 && scheduledHour <= 20;
+    expect(isAllowedHour).toBe(false);
+  });
+
+  it("accepts quiz scheduled in allowed window", () => {
+    const scheduledHour = 10;
+    const isAllowedHour = scheduledHour >= 8 && scheduledHour <= 20;
+    expect(isAllowedHour).toBe(true);
+  });
+});

@@ -817,3 +817,71 @@ export const behavioralEvents = mysqlTable("behavioral_events", {
 export type BehavioralProfile = typeof behavioralProfiles.$inferSelect;
 export type InsertBehavioralProfile = typeof behavioralProfiles.$inferInsert;
 export type BehavioralEvent = typeof behavioralEvents.$inferSelect;
+
+// ─── v7 Tables ────────────────────────────────────────────────────────────────
+
+export const webpushSubscriptions = mysqlTable("webpush_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").references(() => users.id),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  userAgent: varchar("userAgent", { length: 255 }),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const preContestChecklists = mysqlTable("pre_contest_checklists", {
+  id: int("id").autoincrement().primaryKey(),
+  connectionId: int("connectionId"),
+  quizId: varchar("quizId", { length: 64 }),
+  contestName: varchar("contestName", { length: 255 }),
+  scheduledAt: timestamp("scheduledAt"),
+  checkResults: json("checkResults"), // { checkId, status, message, autoFixed }[]
+  overallStatus: mysqlEnum("overallStatus", ["pass", "warn", "fail", "pending"]).default("pending").notNull(),
+  runAt: timestamp("runAt").defaultNow().notNull(),
+  runBy: int("runBy").references(() => users.id),
+});
+
+export const quizHistoryTimeline = mysqlTable("quiz_history_timeline", {
+  id: int("id").autoincrement().primaryKey(),
+  connectionId: int("connectionId").notNull(),
+  quizId: varchar("quizId", { length: 64 }).notNull(),
+  quizTitle: varchar("quizTitle", { length: 255 }),
+  eventType: mysqlEnum("eventType", [
+    "snapshot_created",
+    "ai_review_started",
+    "ai_review_completed",
+    "simulation_started",
+    "simulation_completed",
+    "patch_proposed",
+    "patch_approved",
+    "patch_rejected",
+    "patch_applied",
+    "patch_rolled_back",
+    "settings_audited",
+    "video_verified",
+    "anomaly_detected",
+    "test_page_created",
+    "sync_detected_change",
+  ]).notNull(),
+  eventData: json("eventData"),
+  userId: int("userId").references(() => users.id),
+  occurredAt: timestamp("occurredAt").defaultNow().notNull(),
+});
+
+export const mailerLiteImports = mysqlTable("mailer_lite_imports", {
+  id: int("id").autoincrement().primaryKey(),
+  importedAt: timestamp("importedAt").defaultNow().notNull(),
+  totalImported: int("totalImported").default(0).notNull(),
+  totalUpdated: int("totalUpdated").default(0).notNull(),
+  totalSkipped: int("totalSkipped").default(0).notNull(),
+  status: mysqlEnum("status", ["running", "completed", "failed"]).default("running").notNull(),
+  errorMessage: text("errorMessage"),
+  importedBy: int("importedBy").references(() => users.id),
+});
+
+export type WebpushSubscription = typeof webpushSubscriptions.$inferSelect;
+export type PreContestChecklist = typeof preContestChecklists.$inferSelect;
+export type QuizHistoryEvent = typeof quizHistoryTimeline.$inferSelect;
+export type MailerLiteImport = typeof mailerLiteImports.$inferSelect;
