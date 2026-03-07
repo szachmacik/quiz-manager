@@ -36,6 +36,48 @@
       "when": 1772848951424,
       "tag": "0004_productive_chronomancer",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1772850269620,
+      "tag": "0005_panoramic_ultimates",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1772850336127,
+      "tag": "0006_glamorous_sleepwalker",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1772850813717,
+      "tag": "0007_white_taskmaster",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1772851069569,
+      "tag": "0008_broad_rick_jones",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "5",
+      "when": 1772851157726,
+      "tag": "0009_chilly_vengeance",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1772851238905,
+      "tag": "0010_curved_stephen_strange",
+      "breakpoints": true
     }
   ]
 }

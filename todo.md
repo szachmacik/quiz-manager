@@ -153,3 +153,58 @@
 - [ ] Rozróżnienie: pomoc techniczna vs merytoryczna
 - [ ] VideoVerifier.tsx — strona weryfikatora nagrań
 - [ ] TelemetryDashboard.tsx — dashboard sesji telemetrycznych
+
+## Moduł Wyników Finalnych i Nagród (v6)
+- [ ] Tabele DB: participants, schools, awards, award_history, contest_results, shipping_batches
+- [ ] Silnik rankingowy (punkty + czas, miejsca 1-3 per kategoria)
+- [ ] Lista laureatów (≥90% poprawnych odpowiedzi)
+- [ ] Grupowanie uczestników po szkołach do zbiorczej wysyłki
+- [ ] Optymalizator wysyłki (paczki zbiorcze per szkoła)
+- [ ] System nagród z historią (wykrywanie powtórzeń, flagi "nowa nagroda")
+- [ ] Import uczestników z MailerLite (API)
+- [ ] Import wyników historycznych z Facebook (CSV/JSON)
+- [ ] Import bazy szkół i nauczycieli
+- [ ] Panel wyników finalnych z rankingiem
+- [ ] Panel laureatów z filtrowaniem
+- [ ] Dashboard optymalizacji wysyłki (paczki zbiorcze per szkoła)
+- [ ] Dashboard nagród (historia, sugestie, flagi)
+- [ ] Eksport wyników do PDF/Excel dla organizatora
+- [ ] Eksport listy adresów do wysyłki (CSV)
+
+## Konkurs Offline — Zasada projektowa
+# ZASADA: uczestnik (nawet przedszkolak) dostaje TYLKO kartkę + ołówek
+# Nauczyciel: drukuje arkusze, zbiera po konkursie, wysyła pocztą
+# My: skanujemy, OCR, AI weryfikuje, ranking, wysyłka nagród — wszystko autonomicznie
+
+- [ ] Generator arkuszy PDF (duże litery, obrazki, kółka do zaznaczenia A/B/C/D)
+- [ ] Arkusz dla przedszkolaka (rysunki zamiast tekstu, 5-10 pytań)
+- [ ] Arkusz dla klas 1-3 (duże litery, proste pytania, 10-15 pytań)
+- [ ] Arkusz dla klas 4-6 (standardowy, 15-20 pytań)
+- [ ] Arkusz dla klas 7-8 i starszych (zaawansowany, 20-25 pytań)
+- [ ] Instrukcja dla nauczyciela (1 strona A4, jak przeprowadzić i odesłać)
+- [ ] Koperta adresowa do wydruku (gotowy adres zwrotny)
+- [ ] Backend: skanowanie arkuszy (upload zdjęcia/skanu)
+- [ ] Backend: OCR odpowiedzi (AI vision — rozpoznawanie zaznaczonych kółek)
+- [ ] Backend: weryfikacja OCR (pewność + flaga do ręcznej korekty)
+- [ ] Backend: automatyczne punktowanie po OCR
+- [ ] Backend: ranking offline (punkty + kolejność wpłynięcia)
+- [ ] Backend: optymalizator wysyłki nagród (paczki zbiorcze per szkoła)
+- [ ] Frontend: panel zarządzania konkursem offline
+- [ ] Frontend: upload skanów (drag & drop, masowy)
+- [ ] Frontend: panel korekty OCR (side-by-side: skan + wyniki OCR)
+- [ ] Frontend: ranking offline z filtrowaniem
+- [ ] Frontend: dashboard wysyłki nagród
+
+## Baza Wiedzy o Ryzykach (Risk Knowledge Base)
+- [ ] Tabela risk_items w bazie danych (kategoria, ryzyko, prawdopodobieństwo, skutek, naprawa, prewencja)
+- [ ] Tabela risk_incidents (historia zdarzeń powiązanych z ryzykami)
+- [ ] Seed: wbudowana baza 40+ ryzyk WordPress/AYS/konkurs
+- [ ] riskRouter.ts — CRUD ryzyk, wyszukiwanie, statystyki
+- [ ] Frontend: RiskKnowledgeBase.tsx — panel ryzyk z filtrowaniem i statusem
+- [ ] Integracja z anomalyRouter — automatyczne powiązanie incydentów z ryzykami
+
+## Grupy wiekowe uczestników
+- [ ] Grupy: zerówka (5-6 lat), klasa 1, klasa 2, klasa 3, klasa 4, klasa 5, klasa 6
+- [ ] Każda grupa ma inny profil behawioralny (zerówka = rodzic pisze, kl.1-2 = wsparcie rodzica normalne, kl.3-4 = samodzielność rosnąca, kl.5-6 = pełna samodzielność)
+- [ ] Progi czasowe i wzorce odpowiedzi dostosowane do wieku
+- [ ] Weryfikacja wideo: dla zerówki/kl.1 obecność rodzica jest NORMALNA i nie jest anomalią

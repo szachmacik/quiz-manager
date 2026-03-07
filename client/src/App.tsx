@@ -21,6 +21,11 @@ import QuizSettingsAudit from "./pages/QuizSettingsAudit";
 import VideoVerifier from "./pages/VideoVerifier";
 import QuizBrowser from "./pages/QuizBrowser";
 import SubmitVideo from "./pages/SubmitVideo";
+import ContestResults from "./pages/ContestResults";
+import OfflineContest from "./pages/OfflineContest";
+import AnomalyDetector from "./pages/AnomalyDetector";
+import RiskKnowledgeBase from "./pages/RiskKnowledgeBase";
+import BehavioralProfiles from "./pages/BehavioralProfiles";
 
 function Router() {
   return (
@@ -41,6 +46,11 @@ function Router() {
       <Route path="/settings-audit" component={QuizSettingsAudit} />
       <Route path="/video-verifier" component={VideoVerifier} />
       <Route path="/quiz-browser" component={QuizBrowser} />
+      <Route path="/contest-results" component={ContestResults} />
+      <Route path="/offline-contest" component={OfflineContest} />
+      <Route path="/anomaly-detector" component={AnomalyDetector} />
+      <Route path="/risk-kb" component={RiskKnowledgeBase} />
+      <Route path="/behavioral-profiles" component={BehavioralProfiles} />
       {/* Public route — no auth required */}
       <Route path="/submit-video" component={SubmitVideo} />
       <Route path="/404" component={NotFound} />

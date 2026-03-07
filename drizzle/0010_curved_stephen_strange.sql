@@ -1,0 +1,1 @@
+ALTER TABLE `behavioral_profiles` MODIFY COLUMN `ageGroup` enum('zerowka','klasa_1','klasa_2','klasa_3','klasa_4','klasa_5','klasa_6');

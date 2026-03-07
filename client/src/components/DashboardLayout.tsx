@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users, Globe, FileText, Brain, Play, Wrench, BarChart2, Settings2, Calendar, GitCompare, RefreshCw, Shield, Video, Monitor } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Globe, FileText, Brain, Play, Wrench, BarChart2, Settings2, Calendar, GitCompare, RefreshCw, Shield, Video, Monitor, Trophy, Package, AlertOctagon, BookOpen, UserCheck } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -42,6 +42,11 @@ const menuItems = [
   { icon: Shield, label: "Audyt Ustawień", path: "/settings-audit" },
   { icon: Video, label: "Weryfikator Nagrań", path: "/video-verifier" },
   { icon: Monitor, label: "Przeglądarka Quizu", path: "/quiz-browser" },
+  { icon: Trophy, label: "Wyniki Finalne", path: "/contest-results" },
+  { icon: Package, label: "Konkurs Offline", path: "/offline-contest" },
+  { icon: AlertOctagon, label: "Anomalie Techniczne", path: "/anomaly-detector" },
+  { icon: BookOpen, label: "Baza Ryzyk", path: "/risk-kb" },
+  { icon: UserCheck, label: "Profile Behawioralne", path: "/behavioral-profiles" },
   { icon: Settings2, label: "Ustawienia", path: "/settings" },
 ];
 
