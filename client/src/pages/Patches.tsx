@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, CheckCircle2, XCircle, RotateCcw, AlertTriangle, Brain, Shield } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, RotateCcw, AlertTriangle, Brain, Shield, Search, Filter } from "lucide-react";
 
 const statusConfig = {
   pending: { label: "Oczekuje", color: "text-yellow-400", badge: "secondary" as const },
@@ -34,14 +37,47 @@ export default function PatchesPage() {
     onError: (e) => toast.error(e.message),
   });
 
-  const pendingPatches = patches?.filter(p => p.status === "pending") ?? [];
-  const otherPatches = patches?.filter(p => p.status !== "pending") ?? [];
+  const [patchSearch, setPatchSearch] = useState("");
+  const [patchTypeFilter, setPatchTypeFilter] = useState("all");
+
+  const filteredPatches = patches?.filter(p =>
+    (patchTypeFilter === "all" || p.patchType === patchTypeFilter) &&
+    (!patchSearch || p.title?.toLowerCase().includes(patchSearch.toLowerCase()) || p.description?.toLowerCase().includes(patchSearch.toLowerCase()))
+  ) ?? [];
+  const pendingPatches = filteredPatches.filter(p => p.status === "pending");
+  const otherPatches = filteredPatches.filter(p => p.status !== "pending");
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Propozycje poprawek</h1>
         <p className="text-muted-foreground mt-1">Przeglądaj i zatwierdzaj poprawki zaproponowane przez AI. Żadna zmiana nie trafia na produkcję bez Twojej zgody.</p>
+      </div>
+
+      {/* Filters */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-2 top-2.5 w-3 h-3 text-muted-foreground" />
+          <Input
+            placeholder="Szukaj w poprawkach..."
+            value={patchSearch}
+            onChange={e => setPatchSearch(e.target.value)}
+            className="pl-7 h-8 text-sm"
+          />
+        </div>
+        <Select value={patchTypeFilter} onValueChange={setPatchTypeFilter}>
+          <SelectTrigger className="h-8 w-44 text-sm">
+            <Filter className="w-3 h-3 mr-1" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Wszystkie typy</SelectItem>
+            <SelectItem value="question_text">Treść pytania</SelectItem>
+            <SelectItem value="answer_text">Treść odpowiedzi</SelectItem>
+            <SelectItem value="correct_answer">Poprawna odpowiedź</SelectItem>
+            <SelectItem value="explanation">Wyjaśnienie</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Safety protocol banner */}

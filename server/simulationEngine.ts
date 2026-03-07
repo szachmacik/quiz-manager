@@ -4,6 +4,7 @@
  */
 
 import { WpApiClient, generateRandomAnswers } from "./wpConnector";
+import { notifyOwner } from "./_core/notification";
 import {
   updateSimulation,
   createSimulationAgent,
@@ -222,6 +223,32 @@ export async function runSimulation(params: {
 
     state.logs.push(`[${new Date().toISOString()}] Simulation ${finalStatus}. Completed: ${completedCount}, Failed: ${failedCount}`);
     state.logs.push(`[${new Date().toISOString()}] Stats — avg: ${avg.toFixed(0)}ms | min: ${sorted[0]?.toFixed(0)}ms | max: ${sorted[sorted.length - 1]?.toFixed(0)}ms | p95: ${p95.toFixed(0)}ms | error rate: ${((failedCount / agentCount) * 100).toFixed(1)}%`);
+
+    // Notify owner based on results
+    const errorRate = (failedCount / agentCount) * 100;
+    if (finalStatus === "completed") {
+      if (errorRate > 10) {
+        await notifyOwner({
+          title: `⚠️ Symulacja #${simulationId} — wysoki współczynnik błędów (${errorRate.toFixed(1)}%)`,
+          content: `Symulacja ${agentCount} agentów zakończona z ${errorRate.toFixed(1)}% błędów (${failedCount}/${agentCount}).
+
+Statystyki:
+- Średnio: ${avg.toFixed(0)}ms | P95: ${p95.toFixed(0)}ms | Max: ${(sorted[sorted.length - 1] ?? 0).toFixed(0)}ms
+
+Zalecana akcja: sprawdź logi symulacji i ustawienia serwera WordPress.`,
+        }).catch(() => {});
+      } else {
+        await notifyOwner({
+          title: `✅ Symulacja #${simulationId} — zakończona pomyślnie`,
+          content: `Symulacja ${agentCount} agentów zakończona bez problemów.
+
+Statystyki:
+- Błędy: ${errorRate.toFixed(1)}% | Średnio: ${avg.toFixed(0)}ms | P95: ${p95.toFixed(0)}ms
+
+Serwer WordPress obsłużył obciążenie poprawnie.`,
+        }).catch(() => {});
+      }
+    }
 
   } catch (err: any) {
     state.status = "failed";

@@ -79,3 +79,16 @@
 - [ ] Timeline historii zmian quizu (oś czasu snapshotów)
 - [ ] Toast powiadomienia dla właściciela (nowe propozycje poprawek)
 - [ ] Podgląd quizu jako uczestnik (iframe preview)
+
+## Rozbudowa autonomiczna v4
+
+- [ ] Strona testowa WP — backend: tworzenie/usuwanie prywatnej strony ze shortcode'ami przez WP API
+- [ ] Strona testowa WP — frontend: dedykowana strona z podglądem, kodem PHP i statusem
+- [ ] Powiadomienia email — alert przy błędach krytycznych AI (severity: critical)
+- [ ] Powiadomienia email — alert po zakończeniu symulacji z podsumowaniem wyników
+- [ ] Filtry i wyszukiwanie — Quizy/Snapshoty (po nazwie, typie, dacie)
+- [ ] Filtry i wyszukiwanie — Symulacje (po statusie, liczbie agentów)
+- [ ] Filtry i wyszukiwanie — Analizy AI (po statusie, wyniku)
+- [ ] Filtry i wyszukiwanie — Poprawki (po statusie: pending/approved/applied)
+- [ ] UX: status indicator połączenia WP w sidebarze
+- [ ] UX: podgląd quizu jako uczestnik (iframe preview na stronie testowej)

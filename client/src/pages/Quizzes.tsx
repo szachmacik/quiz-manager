@@ -6,12 +6,16 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Link } from "wouter";
-import { FileText, Download, Brain, Eye, Loader2, RefreshCw, Copy } from "lucide-react";
+import { FileText, Download, Brain, Eye, Loader2, RefreshCw, Copy, Search, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export default function QuizzesPage() {
   const utils = trpc.useUtils();
   const { data: connections } = trpc.connections.list.useQuery();
   const [selectedConn, setSelectedConn] = useState<number | null>(null);
+  const [quizSearch, setQuizSearch] = useState("");
+  const [snapshotSearch, setSnapshotSearch] = useState("");
+  const [snapshotTypeFilter, setSnapshotTypeFilter] = useState("all");
 
   const { data: wpQuizzes, isLoading: loadingWp, refetch: refetchWp } = trpc.quizzes.listFromWp.useQuery(
     { connectionId: selectedConn! },
@@ -73,7 +77,18 @@ export default function QuizzesPage() {
       {/* Quizzes from WP */}
       {selectedConn && (
         <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Quizy w WordPress</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Quizy w WordPress</h2>
+            <div className="relative w-56">
+              <Search className="absolute left-2 top-2.5 w-3 h-3 text-muted-foreground" />
+              <Input
+                placeholder="Szukaj quizu..."
+                value={quizSearch}
+                onChange={e => setQuizSearch(e.target.value)}
+                className="pl-7 h-8 text-sm"
+              />
+            </div>
+          </div>
           {loadingWp ? (
             <div className="flex items-center gap-2 text-muted-foreground text-sm py-4">
               <Loader2 className="w-4 h-4 animate-spin" /> Pobieranie quizów z WordPress...
@@ -86,7 +101,9 @@ export default function QuizzesPage() {
             <p className="text-muted-foreground text-sm py-4">Nie znaleziono quizów. Upewnij się, że plugin AYS Quiz Maker jest aktywny i ma quizy.</p>
           ) : (
             <div className="grid gap-3">
-              {wpQuizzes?.quizzes.map(quiz => {
+              {wpQuizzes?.quizzes.filter(q =>
+                !quizSearch || q.title?.toLowerCase().includes(quizSearch.toLowerCase()) || String(q.id).includes(quizSearch)
+              ).map(quiz => {
                 const hasSnapshot = snapshots?.some(s => s.wpQuizId === quiz.id && s.connectionId === selectedConn);
                 return (
                   <Card key={quiz.id} className="border-border/50">
@@ -130,9 +147,35 @@ export default function QuizzesPage() {
 
       {/* Snapshots */}
       <div className="space-y-3">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-          Snapshoty {selectedConn ? "tego połączenia" : "wszystkie"}
-        </h2>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+            Snapshoty {selectedConn ? "tego połączenia" : "wszystkie"}
+          </h2>
+          <div className="flex items-center gap-2">
+            <div className="relative w-48">
+              <Search className="absolute left-2 top-2.5 w-3 h-3 text-muted-foreground" />
+              <Input
+                placeholder="Szukaj snapshotu..."
+                value={snapshotSearch}
+                onChange={e => setSnapshotSearch(e.target.value)}
+                className="pl-7 h-8 text-sm"
+              />
+            </div>
+            <Select value={snapshotTypeFilter} onValueChange={setSnapshotTypeFilter}>
+              <SelectTrigger className="h-8 w-36 text-sm">
+                <Filter className="w-3 h-3 mr-1" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Wszystkie typy</SelectItem>
+                <SelectItem value="manual">Ręczne</SelectItem>
+                <SelectItem value="auto">Auto-sync</SelectItem>
+                <SelectItem value="pre_simulation">Przed symulacją</SelectItem>
+                <SelectItem value="pre_patch">Przed poprawką</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         {loadingSnaps ? (
           <div className="flex items-center gap-2 text-muted-foreground text-sm py-4">
             <Loader2 className="w-4 h-4 animate-spin" /> Ładowanie...
@@ -141,7 +184,10 @@ export default function QuizzesPage() {
           <p className="text-muted-foreground text-sm py-4">Brak snapshotów. Utwórz snapshot quizu powyżej.</p>
         ) : (
           <div className="grid gap-3">
-            {snapshots?.map(snap => (
+            {snapshots?.filter(s =>
+              (snapshotTypeFilter === "all" || s.snapshotType === snapshotTypeFilter) &&
+              (!snapshotSearch || s.title?.toLowerCase().includes(snapshotSearch.toLowerCase()))
+            ).map(snap => (
               <Card key={snap.id} className="border-border/50">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">

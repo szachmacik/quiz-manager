@@ -5,6 +5,7 @@
 
 import { invokeLLM } from "./_core/llm";
 import { updateAiReview, getSnapshotWithQA, createPatchProposal } from "./db";
+import { notifyOwner } from "./_core/notification";
 
 export interface ReviewFinding {
   questionId: number;
@@ -233,6 +234,19 @@ Zwróć JSON w formacie:
             }
           }
 
+          // Notify owner about analysis results
+          const criticalFindings = findings.filter(f => f.severity === "critical");
+          if (criticalFindings.length > 0) {
+            await notifyOwner({
+              title: `🚨 Analiza AI #${reviewId} — ${criticalFindings.length} krytycznych problemów w quizie`,
+              content: `Analiza quizu "${snapshot.title}" wykryła ${criticalFindings.length} krytycznych problemów:\n\n${criticalFindings.slice(0, 5).map((f, i) => `${i + 1}. ${f.message}`).join('\n')}\n\nPrzejdź do sekcji Poprawki, aby przejrzeć i zatwierdzić sugestie AI.`,
+            }).catch(() => {});
+          } else if (errorsFound === 0) {
+            await notifyOwner({
+              title: `✅ Analiza AI #${reviewId} — quiz "${snapshot.title}" bez błędów`,
+              content: `Analiza zakończona. Wynik: ${parsed.overallScore ?? 100}/100. Nie wykryto krytycznych problemów.`,
+            }).catch(() => {});
+          }
           return;
         }
       } catch (aiErr: any) {

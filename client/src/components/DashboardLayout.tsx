@@ -37,6 +37,7 @@ const menuItems = [
   { icon: Wrench, label: "Poprawki", path: "/patches" },
   { icon: BarChart2, label: "Raporty", path: "/reports" },
   { icon: GitCompare, label: "Porównaj snapshoty", path: "/diff" },
+  { icon: Globe, label: "Strona testowa WP", path: "/test-page" },
   { icon: Calendar, label: "Harmonogram", path: "/scheduler" },
   { icon: Settings2, label: "Ustawienia", path: "/settings" },
 ];

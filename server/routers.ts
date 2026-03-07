@@ -18,6 +18,7 @@ import { runSimulation, getSimulationState, cancelSimulation } from "./simulatio
 import { notifyOwner } from "./_core/notification";
 import { settingsRouter } from "./routers/settingsRouter";
 import { scheduledSimulationsRouter } from "./routers/scheduledRouter";
+import { testPageRouter } from "./routers/testPageRouter";
 import { diffRouter } from "./routers/diffRouter";
 import { exportRouter } from "./routers/exportRouter";
 
@@ -528,6 +529,7 @@ export const appRouter = router({
   scheduled: scheduledSimulationsRouter,
   diff: diffRouter,
   export: exportRouter,
+  testPage: testPageRouter,
 });
 
 export type AppRouter = typeof appRouter;

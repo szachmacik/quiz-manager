@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Link } from "wouter";
-import { Users, Play, Eye, Loader2, TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Users, Play, Eye, Loader2, TrendingUp, AlertTriangle, CheckCircle2, Search, Filter } from "lucide-react";
 
 const statusColors = {
   pending: "secondary",
@@ -35,6 +35,8 @@ export default function SimulationsPage() {
   });
 
   const [open, setOpen] = useState(false);
+  const [simSearch, setSimSearch] = useState("");
+  const [simStatusFilter, setSimStatusFilter] = useState("all");
   const [form, setForm] = useState({
     snapshotId: "", connectionId: "", agentDomain: "",
     agentCount: 100, concurrency: 10, delayMs: 500,
@@ -139,6 +141,33 @@ export default function SimulationsPage() {
         </Dialog>
       </div>
 
+      {/* Filters */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-2 top-2.5 w-3 h-3 text-muted-foreground" />
+          <Input
+            placeholder="Szukaj symulacji..."
+            value={simSearch}
+            onChange={e => setSimSearch(e.target.value)}
+            className="pl-7 h-8 text-sm"
+          />
+        </div>
+        <Select value={simStatusFilter} onValueChange={setSimStatusFilter}>
+          <SelectTrigger className="h-8 w-40 text-sm">
+            <Filter className="w-3 h-3 mr-1" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Wszystkie statusy</SelectItem>
+            <SelectItem value="running">Uruchomione</SelectItem>
+            <SelectItem value="completed">Ukończone</SelectItem>
+            <SelectItem value="failed">Błąd</SelectItem>
+            <SelectItem value="cancelled">Anulowane</SelectItem>
+            <SelectItem value="pending">Oczekujące</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {isLoading ? (
         <div className="flex items-center justify-center h-32"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
       ) : simulations?.length === 0 ? (
@@ -150,7 +179,10 @@ export default function SimulationsPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {simulations?.map(sim => (
+          {simulations?.filter(s =>
+            (simStatusFilter === "all" || s.status === simStatusFilter) &&
+            (!simSearch || s.name?.toLowerCase().includes(simSearch.toLowerCase()) || String(s.id).includes(simSearch))
+          ).map(sim => (
             <Card key={sim.id} className="border-border/50">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
