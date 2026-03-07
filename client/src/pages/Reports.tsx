@@ -3,10 +3,31 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, FileText, Download, TrendingUp, Users, Brain, AlertTriangle } from "lucide-react";
+import { Loader2, FileText, Download, TrendingUp, Users, Brain, AlertTriangle, Printer } from "lucide-react";
+import { useState, useEffect } from "react";
+
+function exportReportAsPdf(html: string, title: string) {
+  const win = window.open("", "_blank");
+  if (!win) return;
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 500);
+}
 
 export default function ReportsPage() {
   const utils = trpc.useUtils();
+  const [exportingId, setExportingId] = useState<number | null>(null);
+  const exportHtmlQuery = trpc.export.reportHtml.useQuery(
+    { id: exportingId ?? 0 },
+    { enabled: exportingId !== null }
+  );
+  useEffect(() => {
+    if (exportHtmlQuery.data && exportingId !== null) {
+      exportReportAsPdf(exportHtmlQuery.data.html, exportHtmlQuery.data.title);
+      setExportingId(null);
+    }
+  }, [exportHtmlQuery.data]);
   const { data: reports, isLoading } = trpc.reports.list.useQuery();
   const { data: simulations } = trpc.simulations.list.useQuery({});
   const { data: reviews } = trpc.reviews.list.useQuery({});
@@ -155,6 +176,21 @@ export default function ReportsPage() {
                   {report.summary && (
                     <p className="text-xs text-muted-foreground mt-3">{report.summary}</p>
                   )}
+
+                  <div className="mt-3 flex justify-end">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="gap-2 text-xs"
+                      onClick={() => setExportingId(report.id)}
+                      disabled={exportingId === report.id}
+                    >
+                      {exportingId === report.id
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : <Printer className="w-3 h-3" />}
+                      Eksportuj PDF
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             );

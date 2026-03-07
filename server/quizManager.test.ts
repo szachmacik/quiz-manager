@@ -84,3 +84,74 @@ describe("auth.logout", () => {
     expect(true).toBe(true);
   });
 });
+
+// ─── AutoSync tests ───────────────────────────────────────────────────────────
+describe("AutoSync", () => {
+  it("runSync returns correct shape", async () => {
+    const { runSync } = await import("./autoSync");
+    const result = await runSync();
+    expect(result).toHaveProperty("checked");
+    expect(result).toHaveProperty("changed");
+    expect(result).toHaveProperty("errors");
+    expect(typeof result.checked).toBe("number");
+    expect(typeof result.changed).toBe("number");
+    expect(typeof result.errors).toBe("number");
+  });
+
+  it("startAutoSync does not throw", async () => {
+    // startAutoSync starts a background interval — just verify it doesn't throw
+    const { startAutoSync } = await import("./autoSync");
+    expect(() => startAutoSync(999999)).not.toThrow();
+  });
+});
+
+// ─── Webhook handler tests ────────────────────────────────────────────────────
+describe("WebhookHandler", () => {
+  it("registerWebhookRoutes exports a function", async () => {
+    const { registerWebhookRoutes } = await import("./webhookHandler");
+    expect(typeof registerWebhookRoutes).toBe("function");
+  });
+});
+
+// ─── Export Router tests ──────────────────────────────────────────────────────
+import { appRouter } from "./routers";
+import type { TrpcContext } from "./_core/context";
+
+function createTestCtx(): TrpcContext {
+  return {
+    user: {
+      id: 1, openId: "test-user", email: "test@example.com",
+      name: "Test User", loginMethod: "manus", role: "admin",
+      createdAt: new Date(), updatedAt: new Date(), lastSignedIn: new Date(),
+    },
+    req: { protocol: "https", headers: {} } as TrpcContext["req"],
+    res: { clearCookie: () => {} } as TrpcContext["res"],
+  };
+}
+
+describe("ExportRouter", () => {
+  it("trends returns weekly array with 8 buckets", async () => {
+    const caller = appRouter.createCaller(createTestCtx());
+    const result = await caller.export.trends();
+    expect(result.weekly).toHaveLength(8);
+    expect(result.summary).toHaveProperty("totalSnapshots");
+    expect(result.summary).toHaveProperty("totalSimulations");
+  });
+
+  it("pendingPatchesCount returns correct shape", async () => {
+    const caller = appRouter.createCaller(createTestCtx());
+    const result = await caller.export.pendingPatchesCount();
+    expect(result).toHaveProperty("pending");
+    expect(result).toHaveProperty("approved");
+    expect(result).toHaveProperty("total");
+  });
+});
+
+describe("SettingsRouter", () => {
+  it("getAll returns an object", async () => {
+    const caller = appRouter.createCaller(createTestCtx());
+    const result = await caller.settings.getAll();
+    expect(typeof result).toBe("object");
+    expect(result).not.toBeNull();
+  });
+});

@@ -4,13 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Link, useParams } from "wouter";
-import { ArrowLeft, Brain, CheckCircle2, XCircle, Loader2, HelpCircle } from "lucide-react";
+import { ArrowLeft, Brain, CheckCircle2, XCircle, Loader2, HelpCircle, Copy, Download, FileJson, FileSpreadsheet } from "lucide-react";
+
+function downloadFile(content: string, filename: string, mimeType: string) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function SnapshotDetailPage() {
   const { id } = useParams<{ id: string }>();
   const snapshotId = parseInt(id, 10);
 
   const { data, isLoading } = trpc.quizzes.getSnapshot.useQuery({ id: snapshotId });
+  const { data: jsonExport } = trpc.export.snapshotJson.useQuery({ id: snapshotId }, { enabled: !!snapshotId });
+  const { data: csvExport } = trpc.export.snapshotCsv.useQuery({ id: snapshotId }, { enabled: !!snapshotId });
   const reviewMutation = trpc.reviews.start.useMutation({
     onSuccess: (d) => toast.success(`Analiza AI uruchomiona (ID: ${d.reviewId})`),
     onError: (e) => toast.error(e.message),
@@ -37,10 +47,30 @@ export default function SnapshotDetailPage() {
         </Button>
       </div>
 
-      <div className="flex gap-3 flex-wrap">
+      <div className="flex gap-3 flex-wrap items-center">
         <Badge variant="outline">{snapshot.questionCount} pytań</Badge>
         <Badge variant="outline">{snapshot.snapshotType}</Badge>
-        <Badge variant="secondary" className="font-mono text-xs">{snapshot.shortcode}</Badge>
+        <div className="flex items-center gap-1">
+          <Badge variant="secondary" className="font-mono text-xs">{snapshot.shortcode}</Badge>
+          <Button
+            size="sm" variant="ghost" className="h-6 w-6 p-0"
+            onClick={() => { navigator.clipboard.writeText(snapshot.shortcode ?? ""); toast.success("Shortcode skopiowany!"); }}
+          >
+            <Copy className="w-3 h-3" />
+          </Button>
+        </div>
+        {jsonExport && (
+          <Button size="sm" variant="outline" className="gap-1 text-xs h-7"
+            onClick={() => downloadFile(JSON.stringify(jsonExport.data, null, 2), jsonExport.filename, "application/json")}>
+            <FileJson className="w-3 h-3" /> JSON
+          </Button>
+        )}
+        {csvExport && (
+          <Button size="sm" variant="outline" className="gap-1 text-xs h-7"
+            onClick={() => downloadFile(csvExport.csv, csvExport.filename, "text/csv")}>
+            <FileSpreadsheet className="w-3 h-3" /> CSV
+          </Button>
+        )}
       </div>
 
       <div className="space-y-4">

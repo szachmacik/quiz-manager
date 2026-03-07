@@ -58,3 +58,24 @@
 - [ ] Kopiowanie shortcode do schowka jednym kliknięciem
 - [ ] Filtrowanie i sortowanie list (quizy, symulacje, raporty)
 - [ ] Status badge auto-sync w sidebar (ostatnia synchronizacja)
+
+## Rozbudowa autonomiczna (faza 3 — v3)
+
+### Backend
+- [ ] Eksport raportów do PDF (HTML→PDF przez endpoint /api/reports/:id/pdf)
+- [ ] Webhook endpoint dla WordPress (odbieranie powiadomień o zmianach quizów)
+- [ ] Eksport quizu do JSON i CSV
+- [ ] Endpoint statystyk zbiorczych (trendy: symulacje/tydzień, błędy AI/quiz)
+- [ ] Badge counter — liczba oczekujących poprawek w sidebar
+
+### Frontend
+- [ ] Wykresy trendów na Home dashboard (Recharts — symulacje, błędy, snapshoty)
+- [ ] Kopiowanie shortcode do schowka jednym kliknięciem (Quizy)
+- [ ] Filtrowanie i sortowanie list (quizy, symulacje, raporty)
+- [ ] Strona testowa WP — przycisk "Utwórz stronę testową" z podglądem shortcode
+- [ ] Badge z liczbą oczekujących poprawek w sidebar nawigacji
+- [ ] Eksport raportu PDF — przycisk na stronie raportów
+- [ ] Eksport quizu JSON/CSV — przycisk na stronie snapshotów
+- [ ] Timeline historii zmian quizu (oś czasu snapshotów)
+- [ ] Toast powiadomienia dla właściciela (nowe propozycje poprawek)
+- [ ] Podgląd quizu jako uczestnik (iframe preview)

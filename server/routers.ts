@@ -19,6 +19,7 @@ import { notifyOwner } from "./_core/notification";
 import { settingsRouter } from "./routers/settingsRouter";
 import { scheduledSimulationsRouter } from "./routers/scheduledRouter";
 import { diffRouter } from "./routers/diffRouter";
+import { exportRouter } from "./routers/exportRouter";
 
 // ─── WordPress Connections ────────────────────────────────────────────────────
 const connectionsRouter = router({
@@ -526,6 +527,7 @@ export const appRouter = router({
   settings: settingsRouter,
   scheduled: scheduledSimulationsRouter,
   diff: diffRouter,
+  export: exportRouter,
 });
 
 export type AppRouter = typeof appRouter;

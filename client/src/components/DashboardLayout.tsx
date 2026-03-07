@@ -26,6 +26,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
+import { trpc } from "@/lib/trpc";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -114,8 +115,13 @@ function DashboardLayoutContent({
   children,
   setSidebarWidth,
 }: DashboardLayoutContentProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const [location, setLocation] = useLocation();
+  const { data: pendingCount } = trpc.export.pendingPatchesCount.useQuery(
+    undefined,
+    { enabled: isAuthenticated, refetchInterval: 15000 }
+  );
+  const pendingBadge = (pendingCount?.pending ?? 0) + (pendingCount?.approved ?? 0);
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
@@ -201,7 +207,12 @@ function DashboardLayoutContent({
                       <item.icon
                         className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
                       />
-                      <span>{item.label}</span>
+                      <span className="flex-1">{item.label}</span>
+                      {item.path === "/patches" && pendingBadge > 0 && (
+                        <span className="ml-auto text-xs bg-yellow-500 text-black font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center leading-none">
+                          {pendingBadge}
+                        </span>
+                      )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 );
