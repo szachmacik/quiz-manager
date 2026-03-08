@@ -221,3 +221,9 @@
 - [ ] Optymalizacja UX nawigacji (grupowanie sekcji w sidebar)
 - [ ] Strona główna — sekcja "Wymagane akcje" (co wymaga uwagi)
 - [ ] Testy v7
+
+## Finalna rozbudowa v8
+- [ ] MailerLite API key — panel ustawień z polem na klucz API i testem połączenia
+- [ ] Grupowanie nawigacji — sekcje z separatorami (Quizy, Symulacje, Wyniki, Weryfikacja, Offline, Administracja)
+- [ ] Generator dyplomów PDF — spersonalizowane dyplomy dla laureatów z imieniem, wynikiem, datą
+- [ ] Autodeploy — konfiguracja Coolify + lista brakujących danych

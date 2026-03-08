@@ -431,3 +431,75 @@ describe("Pre-contest checklista — timing logic", () => {
     expect(isAllowedHour).toBe(true);
   });
 });
+
+// ─── v8 Tests: Diplomas ───────────────────────────────────────────────────────
+
+describe("diplomaRouter — diploma generation", () => {
+  it("generates diploma HTML with correct participant name", async () => {
+    const { diplomaRouter } = await import("./routers/diplomaRouter");
+    const caller = diplomaRouter.createCaller({} as any);
+    const result = await caller.generate({
+      participantName: "Anna Kowalska",
+      quizTitle: "Mistrz Matematyki",
+      score: 9,
+      maxScore: 10,
+      contestDate: "15.03.2025",
+      diplomaType: "laureate",
+    });
+    expect(result.success).toBe(true);
+    expect(result.html).toContain("Anna Kowalska");
+    expect(result.html).toContain("Mistrz Matematyki");
+    expect(result.html).toContain("90%");
+  });
+
+  it("winner_1st diploma contains gold color and ribbon", async () => {
+    const { diplomaRouter } = await import("./routers/diplomaRouter");
+    const caller = diplomaRouter.createCaller({} as any);
+    const result = await caller.generate({
+      participantName: "Piotr Nowak",
+      quizTitle: "Quiz Historyczny",
+      score: 10,
+      maxScore: 10,
+      contestDate: "15.03.2025",
+      diplomaType: "winner_1st",
+      place: 1,
+    });
+    expect(result.html).toContain("#FFD700");
+    expect(result.html).toContain("🥇");
+  });
+
+  it("returns 5 diploma types", async () => {
+    const { diplomaRouter } = await import("./routers/diplomaRouter");
+    const caller = diplomaRouter.createCaller({} as any);
+    const types = await caller.getTypes();
+    expect(types.length).toBe(5);
+    expect(types.map((t: any) => t.key)).toContain("winner_1st");
+    expect(types.map((t: any) => t.key)).toContain("laureate");
+  });
+
+  it("returns 7 age groups (zerówka through klasa_6)", async () => {
+    const { diplomaRouter } = await import("./routers/diplomaRouter");
+    const caller = diplomaRouter.createCaller({} as any);
+    const groups = await caller.getAgeGroups();
+    expect(groups.length).toBe(7);
+    const keys = groups.map((g: any) => g.key);
+    expect(keys).toContain("zerówka");
+    expect(keys).toContain("klasa_6");
+  });
+
+  it("batch generates diplomas for multiple contestants", async () => {
+    const { diplomaRouter } = await import("./routers/diplomaRouter");
+    const caller = diplomaRouter.createCaller({} as any);
+    const result = await caller.batchGenerate({
+      contestants: [
+        { participantName: "Jan Kowalski", score: 10, maxScore: 10, diplomaType: "winner_1st", place: 1 },
+        { participantName: "Maria Nowak", score: 9, maxScore: 10, diplomaType: "laureate" },
+      ],
+      quizTitle: "Konkurs Wiedzy",
+      contestDate: "15.03.2025",
+    });
+    expect(result.count).toBe(2);
+    expect(result.diplomas[0].participantName).toBe("Jan Kowalski");
+    expect(result.diplomas[0].html).toContain("Jan Kowalski");
+  });
+});

@@ -38,6 +38,11 @@ async function startServer() {
   // WordPress webhook endpoints
   const { registerWebhookRoutes } = await import("../webhookHandler");
   registerWebhookRoutes(app);
+  // Health check endpoint for Coolify/Docker
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", version: "8.0.0", timestamp: new Date().toISOString() });
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

@@ -28,7 +28,8 @@ import RiskKnowledgeBase from "./pages/RiskKnowledgeBase";
 import BehavioralProfiles from "./pages/BehavioralProfiles";
 import MailerLiteImport from "./pages/MailerLiteImport";
 import PreContest from "./pages/PreContest";
-import QuizHistory from "./pages/QuizHistory";
+import QuizHistory from "@/pages/QuizHistory";
+import Diplomas from "@/pages/Diplomas";
 
 function Router() {
   return (
@@ -57,6 +58,7 @@ function Router() {
       <Route path="/mailerlite" component={MailerLiteImport} />
       <Route path="/pre-contest" component={PreContest} />
       <Route path="/quiz-history" component={QuizHistory} />
+      <Route path="/diplomas" component={Diplomas} />
       {/* Public route — no auth required */}
       <Route path="/submit-video" component={SubmitVideo} />
       <Route path="/404" component={NotFound} />

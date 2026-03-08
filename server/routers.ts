@@ -32,6 +32,7 @@ import { mailerLiteRouter } from "./routers/mailerLiteRouter";
 import { webpushRouter } from "./routers/webpushRouter";
 import { preContestRouter } from "./routers/preContestRouter";
 import { quizHistoryRouter } from "./routers/quizHistoryRouter";
+import { diplomaRouter } from "./routers/diplomaRouter";
 // ─── WordPress Connectionss ────────────────────────────────────────────────────
 const connectionsRouter = router({
   list: protectedProcedure.query(() => listConnections()),
@@ -551,5 +552,6 @@ export const appRouter = router({
   webpush: webpushRouter,
   preContest: preContestRouter,
   quizHistory: quizHistoryRouter,
+  diploma: diplomaRouter,
 });
 export type AppRouter = typeof appRouter;

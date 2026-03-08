@@ -21,36 +21,86 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users, Globe, FileText, Brain, Play, Wrench, BarChart2, Settings2, Calendar, GitCompare, RefreshCw, Shield, Video, Monitor, Trophy, Package, AlertOctagon, BookOpen, UserCheck, Mail, CheckSquare, History } from "lucide-react";
+import {
+  LayoutDashboard, LogOut, PanelLeft,
+  Globe, FileText, GitCompare, Calendar, History,
+  Brain, Play, BarChart2, Wrench,
+  Trophy, Package, Award,
+  Shield, Video, Monitor, UserCheck, AlertOctagon,
+  BookOpen, Mail, CheckSquare, Settings2,
+} from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import { trpc } from "@/lib/trpc";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-  { icon: Globe, label: "Połączenia WP", path: "/connections" },
-  { icon: FileText, label: "Quizy i Snapshoty", path: "/quizzes" },
-  { icon: Brain, label: "Analizy AI", path: "/reviews" },
-  { icon: Play, label: "Symulacje", path: "/simulations" },
-  { icon: Wrench, label: "Poprawki", path: "/patches" },
-  { icon: BarChart2, label: "Raporty", path: "/reports" },
-  { icon: GitCompare, label: "Porównaj snapshoty", path: "/diff" },
-  { icon: Globe, label: "Strona testowa WP", path: "/test-page" },
-  { icon: Calendar, label: "Harmonogram", path: "/scheduler" },
-  { icon: Shield, label: "Audyt Ustawień", path: "/settings-audit" },
-  { icon: Video, label: "Weryfikator Nagrań", path: "/video-verifier" },
-  { icon: Monitor, label: "Przeglądarka Quizu", path: "/quiz-browser" },
-  { icon: Trophy, label: "Wyniki Finalne", path: "/contest-results" },
-  { icon: Package, label: "Konkurs Offline", path: "/offline-contest" },
-  { icon: AlertOctagon, label: "Anomalie Techniczne", path: "/anomaly-detector" },
-  { icon: BookOpen, label: "Baza Ryzyk", path: "/risk-kb" },
-  { icon: UserCheck, label: "Profile Behawioralne", path: "/behavioral-profiles" },
-  { icon: Mail, label: "Import MailerLite", path: "/mailerlite" },
-  { icon: CheckSquare, label: "Checklista Pre-Contest", path: "/pre-contest" },
-  { icon: History, label: "Historia Quizu", path: "/quiz-history" },
-  { icon: Settings2, label: "Ustawienia", path: "/settings" },
+type NavItem = {
+  icon: React.ElementType;
+  label: string;
+  path: string;
+  badge?: boolean;
+};
+
+type NavSection = {
+  title: string;
+  items: NavItem[];
+};
+
+const navSections: NavSection[] = [
+  {
+    title: "",
+    items: [
+      { icon: LayoutDashboard, label: "Dashboard", path: "/" },
+    ],
+  },
+  {
+    title: "Quizy",
+    items: [
+      { icon: Globe, label: "Połączenia WP", path: "/connections" },
+      { icon: FileText, label: "Quizy i Snapshoty", path: "/quizzes" },
+      { icon: GitCompare, label: "Porównaj snapshoty", path: "/diff" },
+      { icon: Globe, label: "Strona testowa WP", path: "/test-page" },
+      { icon: Calendar, label: "Harmonogram", path: "/scheduler" },
+      { icon: History, label: "Historia Quizu", path: "/quiz-history" },
+    ],
+  },
+  {
+    title: "Symulacje i QA",
+    items: [
+      { icon: Brain, label: "Analizy AI", path: "/reviews" },
+      { icon: Play, label: "Symulacje", path: "/simulations" },
+      { icon: BarChart2, label: "Raporty", path: "/reports" },
+      { icon: Wrench, label: "Poprawki", path: "/patches", badge: true },
+    ],
+  },
+  {
+    title: "Wyniki i Nagrody",
+    items: [
+      { icon: Trophy, label: "Wyniki Finalne", path: "/contest-results" },
+      { icon: Award, label: "Dyplomy", path: "/diplomas" },
+      { icon: Package, label: "Konkurs Offline", path: "/offline-contest" },
+    ],
+  },
+  {
+    title: "Weryfikacja",
+    items: [
+      { icon: Shield, label: "Audyt Ustawień", path: "/settings-audit" },
+      { icon: Video, label: "Weryfikator Nagrań", path: "/video-verifier" },
+      { icon: Monitor, label: "Przeglądarka Quizu", path: "/quiz-browser" },
+      { icon: UserCheck, label: "Profile Behawioralne", path: "/behavioral-profiles" },
+      { icon: AlertOctagon, label: "Anomalie Techniczne", path: "/anomaly-detector" },
+    ],
+  },
+  {
+    title: "Administracja",
+    items: [
+      { icon: BookOpen, label: "Baza Ryzyk", path: "/risk-kb" },
+      { icon: Mail, label: "Import MailerLite", path: "/mailerlite" },
+      { icon: CheckSquare, label: "Checklista Pre-Contest", path: "/pre-contest" },
+      { icon: Settings2, label: "Ustawienia", path: "/settings" },
+    ],
+  },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -74,7 +124,7 @@ export default function DashboardLayout({
   }, [sidebarWidth]);
 
   if (loading) {
-    return <DashboardLayoutSkeleton />
+    return <DashboardLayoutSkeleton />;
   }
 
   if (!user) {
@@ -83,20 +133,18 @@ export default function DashboardLayout({
         <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
           <div className="flex flex-col items-center gap-6">
             <h1 className="text-2xl font-semibold tracking-tight text-center">
-              Sign in to continue
+              Zaloguj się aby kontynuować
             </h1>
             <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Access to this dashboard requires authentication. Continue to launch the login flow.
+              Dostęp do panelu wymaga uwierzytelnienia.
             </p>
           </div>
           <Button
-            onClick={() => {
-              window.location.href = getLoginUrl();
-            }}
+            onClick={() => { window.location.href = getLoginUrl(); }}
             size="lg"
             className="w-full shadow-lg hover:shadow-xl transition-all"
           >
-            Sign in
+            Zaloguj się
           </Button>
         </div>
       </div>
@@ -105,11 +153,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider
-      style={
-        {
-          "--sidebar-width": `${sidebarWidth}px`,
-        } as CSSProperties
-      }
+      style={{ "--sidebar-width": `${sidebarWidth}px` } as CSSProperties}
     >
       <DashboardLayoutContent setSidebarWidth={setSidebarWidth}>
         {children}
@@ -123,10 +167,7 @@ type DashboardLayoutContentProps = {
   setSidebarWidth: (width: number) => void;
 };
 
-function DashboardLayoutContent({
-  children,
-  setSidebarWidth,
-}: DashboardLayoutContentProps) {
+function DashboardLayoutContent({ children, setSidebarWidth }: DashboardLayoutContentProps) {
   const { user, logout, isAuthenticated } = useAuth();
   const [location, setLocation] = useLocation();
   const { data: pendingCount } = trpc.export.pendingPatchesCount.useQuery(
@@ -138,37 +179,28 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
 
+  const activeItem = navSections.flatMap(s => s.items).find(item => item.path === location);
+
   useEffect(() => {
-    if (isCollapsed) {
-      setIsResizing(false);
-    }
+    if (isCollapsed) setIsResizing(false);
   }, [isCollapsed]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing) return;
-
       const sidebarLeft = sidebarRef.current?.getBoundingClientRect().left ?? 0;
       const newWidth = e.clientX - sidebarLeft;
-      if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
-        setSidebarWidth(newWidth);
-      }
+      if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) setSidebarWidth(newWidth);
     };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-    };
-
+    const handleMouseUp = () => setIsResizing(false);
     if (isResizing) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
       document.body.style.cursor = "col-resize";
       document.body.style.userSelect = "none";
     }
-
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -180,11 +212,7 @@ function DashboardLayoutContent({
   return (
     <>
       <div className="relative" ref={sidebarRef}>
-        <Sidebar
-          collapsible="icon"
-          className="border-r-0"
-          disableTransition={isResizing}
-        >
+        <Sidebar collapsible="icon" className="border-r-0" disableTransition={isResizing}>
           <SidebarHeader className="h-16 justify-center">
             <div className="flex items-center gap-3 px-2 transition-all w-full">
               <button
@@ -194,42 +222,53 @@ function DashboardLayoutContent({
               >
                 <PanelLeft className="h-4 w-4 text-muted-foreground" />
               </button>
-              {!isCollapsed ? (
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate">
-                    Navigation
-                  </span>
-                </div>
-              ) : null}
+              {!isCollapsed && (
+                <span className="font-semibold tracking-tight truncate text-sm">
+                  Quiz Manager
+                </span>
+              )}
             </div>
           </SidebarHeader>
 
-          <SidebarContent className="gap-0">
-            <SidebarMenu className="px-2 py-1">
-              {menuItems.map(item => {
-                const isActive = location === item.path;
-                return (
-                  <SidebarMenuItem key={item.path}>
-                    <SidebarMenuButton
-                      isActive={isActive}
-                      onClick={() => setLocation(item.path)}
-                      tooltip={item.label}
-                      className={`h-10 transition-all font-normal`}
-                    >
-                      <item.icon
-                        className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
-                      />
-                      <span className="flex-1">{item.label}</span>
-                      {item.path === "/patches" && pendingBadge > 0 && (
-                        <span className="ml-auto text-xs bg-yellow-500 text-black font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center leading-none">
-                          {pendingBadge}
-                        </span>
-                      )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
+          <SidebarContent className="gap-0 overflow-y-auto">
+            {navSections.map((section, si) => (
+              <div key={si} className={si > 0 ? "mt-1" : ""}>
+                {section.title && !isCollapsed && (
+                  <div className="px-4 py-1.5 mt-2">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                      {section.title}
+                    </p>
+                  </div>
+                )}
+                {section.title && isCollapsed && si > 0 && (
+                  <div className="mx-3 my-1 border-t border-border/40" />
+                )}
+                <SidebarMenu className="px-2 py-0.5">
+                  {section.items.map(item => {
+                    const isActive = location === item.path;
+                    const badge = item.badge && pendingBadge > 0 ? pendingBadge : 0;
+                    return (
+                      <SidebarMenuItem key={item.path}>
+                        <SidebarMenuButton
+                          isActive={isActive}
+                          onClick={() => setLocation(item.path)}
+                          tooltip={item.label}
+                          className="h-9 transition-all font-normal"
+                        >
+                          <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
+                          <span className="flex-1 truncate">{item.label}</span>
+                          {badge > 0 && (
+                            <span className="ml-auto text-xs bg-yellow-500 text-black font-bold rounded-full px-1.5 py-0.5 min-w-[18px] text-center leading-none">
+                              {badge}
+                            </span>
+                          )}
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </div>
+            ))}
           </SidebarContent>
 
           <SidebarFooter className="p-3">
@@ -242,22 +281,15 @@ function DashboardLayoutContent({
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
-                    <p className="text-sm font-medium truncate leading-none">
-                      {user?.name || "-"}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate mt-1.5">
-                      {user?.email || "-"}
-                    </p>
+                    <p className="text-sm font-medium truncate leading-none">{user?.name || "-"}</p>
+                    <p className="text-xs text-muted-foreground truncate mt-1.5">{user?.email || "-"}</p>
                   </div>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="cursor-pointer text-destructive focus:text-destructive"
-                >
+                <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:text-destructive">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
+                  <span>Wyloguj</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -265,26 +297,17 @@ function DashboardLayoutContent({
         </Sidebar>
         <div
           className={`absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-primary/20 transition-colors ${isCollapsed ? "hidden" : ""}`}
-          onMouseDown={() => {
-            if (isCollapsed) return;
-            setIsResizing(true);
-          }}
+          onMouseDown={() => { if (!isCollapsed) setIsResizing(true); }}
           style={{ zIndex: 50 }}
         />
       </div>
 
       <SidebarInset>
         {isMobile && (
-          <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:backdrop-blur sticky top-0 z-40">
+          <div className="flex border-b h-14 items-center justify-between bg-background/95 px-2 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
             <div className="flex items-center gap-2">
               <SidebarTrigger className="h-9 w-9 rounded-lg bg-background" />
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col gap-1">
-                  <span className="tracking-tight text-foreground">
-                    {activeMenuItem?.label ?? "Menu"}
-                  </span>
-                </div>
-              </div>
+              <span className="tracking-tight text-foreground">{activeItem?.label ?? "Menu"}</span>
             </div>
           </div>
         )}
