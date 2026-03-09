@@ -11,7 +11,6 @@ COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
 
 # Install ALL dependencies (including devDependencies needed for build)
-# Force development mode to ensure devDependencies are installed
 ENV NODE_ENV=development
 RUN pnpm install --no-frozen-lockfile
 
@@ -33,9 +32,10 @@ RUN npm install -g pnpm@9
 COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
 
-# Install production dependencies only
+# Install ALL dependencies (vite is needed at runtime for dev mode detection)
+# We install everything to avoid missing package errors at startup
 ENV NODE_ENV=production
-RUN pnpm install --no-frozen-lockfile --prod
+RUN pnpm install --no-frozen-lockfile
 
 # Copy built artifacts from builder
 COPY --from=builder /app/dist ./dist
