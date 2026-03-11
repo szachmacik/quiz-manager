@@ -30,11 +30,15 @@ import MailerLiteImport from "./pages/MailerLiteImport";
 import PreContest from "./pages/PreContest";
 import QuizHistory from "@/pages/QuizHistory";
 import Diplomas from "@/pages/Diplomas";
+import Login from "@/pages/Login";
+import AuthCallback from "@/pages/AuthCallback";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/" component={Home} />
       <Route path="/connections" component={Connections} />
       <Route path="/quizzes" component={Quizzes} />
       <Route path="/quizzes/snapshot/:id" component={SnapshotDetail} />
