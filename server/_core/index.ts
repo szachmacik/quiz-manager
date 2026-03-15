@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import { guardianRouter } from "../guardian";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -77,7 +78,8 @@ async function startServer() {
     await setupVite(app, server);
   } else {
     const { serveStatic } = await import("./serveStatic");
-    serveStatic(app);
+    app.use("/api/guardian", guardianRouter);
+  serveStatic(app);
   }
 
   const preferredPort = parseInt(process.env.PORT || "3000");
