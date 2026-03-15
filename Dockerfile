@@ -1,52 +1,28 @@
 # ─── Build Stage ──────────────────────────────────────────────────────────────
 FROM node:22-alpine AS builder
-
 WORKDIR /app
-
-# Install pnpm
 RUN npm install -g pnpm@9
-
-# Copy package files and patches
 COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
-
-# Install ALL dependencies (including devDependencies needed for build)
 ENV NODE_ENV=development
 RUN pnpm install --no-frozen-lockfile
-
-# Copy source code
 COPY . .
-
-# Build the application (vite build + esbuild server)
 RUN pnpm run build
 
 # ─── Production Stage ─────────────────────────────────────────────────────────
 FROM node:22-alpine AS production
-
 WORKDIR /app
-
-# Install pnpm
 RUN npm install -g pnpm@9
-
-# Copy package files and patches
 COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
-
-# Install ALL dependencies (vite is needed at runtime for dev mode detection)
-# We install everything to avoid missing package errors at startup
-ENV NODE_ENV=production
+# NODE_ENV=development to include devDeps like vite that server needs at runtime
+ENV NODE_ENV=development
 RUN pnpm install --no-frozen-lockfile
-
-# Copy built artifacts from builder
+# Override to production after install so app runs in prod mode
+ENV NODE_ENV=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
-
-# Expose port
 EXPOSE 3000
-
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget -qO- http://localhost:3000/api/health || exit 1
-
-# Start the server (esbuild outputs to dist/index.js)
 CMD ["node", "dist/index.js"]
