@@ -1,4 +1,3 @@
-# ─── Build Stage ──────────────────────────────────────────────────────────────
 FROM node:22-alpine AS builder
 WORKDIR /app
 RUN npm install -g pnpm@9
@@ -9,16 +8,13 @@ RUN pnpm install --no-frozen-lockfile
 COPY . .
 RUN pnpm run build
 
-# ─── Production Stage ─────────────────────────────────────────────────────────
 FROM node:22-alpine AS production
 WORKDIR /app
 RUN npm install -g pnpm@9
 COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
-# NODE_ENV=development to include devDeps like vite that server needs at runtime
 ENV NODE_ENV=development
 RUN pnpm install --no-frozen-lockfile
-# Override to production after install so app runs in prod mode
 ENV NODE_ENV=production
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
