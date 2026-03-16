@@ -1,4 +1,4 @@
-import { aiRouter } from "./aiRouter";
+import { aiRouter } from "./routers/aiRouter";
 import { z } from "zod";
 import { COOKIE_NAME } from "../shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
