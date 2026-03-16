@@ -1,3 +1,4 @@
+// Guardian v1773648168
 /**
  * AI Guardian Bot — Quiz Manager
  * POST /api/guardian  → AI chat
