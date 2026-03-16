@@ -9,6 +9,7 @@ COPY . .
 RUN pnpm run build
 
 FROM node:22-alpine AS production
+ARG CACHE_BUST=202603160757
 WORKDIR /app
 RUN npm install -g pnpm@9
 COPY package.json pnpm-lock.yaml ./
