@@ -72,14 +72,16 @@ async function startServer() {
       createContext,
     })
   );
+
+  // AI Guardian Bot — must be before static serving
+  app.use("/api/guardian", guardianRouter);
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     const { setupVite } = await import("./vite");
     await setupVite(app, server);
   } else {
     const { serveStatic } = await import("./serveStatic");
-    app.use("/api/guardian", guardianRouter);
-  serveStatic(app);
+    serveStatic(app);
   }
 
   const preferredPort = parseInt(process.env.PORT || "3000");
