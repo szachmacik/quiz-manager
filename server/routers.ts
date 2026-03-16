@@ -1,3 +1,4 @@
+import { aiRouter } from "./aiRouter";
 import { z } from "zod";
 import { COOKIE_NAME } from "../shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -523,6 +524,7 @@ const reportsRouter = router({
 
 // ─── App Router ───────────────────────────────────────────────────────────────
 export const appRouter = router({
+  ai: aiRouter,
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
