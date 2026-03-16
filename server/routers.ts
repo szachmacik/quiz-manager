@@ -530,7 +530,8 @@ export const appRouter = router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      const clearCookieOptions = Object.assign({}, cookieOptions, { maxAge: 0 });
+      ctx.res.clearCookie(COOKIE_NAME, clearCookieOptions);
       return { success: true } as const;
     }),
   
