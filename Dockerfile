@@ -22,5 +22,5 @@ COPY --from=builder /app/drizzle ./drizzle
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget -qO- http://localhost:3000/api/health || exit 1
-LABEL build=1773681957
+LABEL build=1773728552
 CMD ["node", "dist/index.js"]
