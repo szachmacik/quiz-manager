@@ -1,4 +1,5 @@
 FROM node:22-alpine AS builder
+LABEL build="1773728867"
 WORKDIR /app
 RUN npm install -g pnpm@9
 COPY package.json pnpm-lock.yaml ./
