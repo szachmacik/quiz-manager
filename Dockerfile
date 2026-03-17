@@ -6,6 +6,7 @@ COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
 ENV NODE_ENV=development
 RUN pnpm install --no-frozen-lockfile
+ARG CACHEBUST=1773729299
 COPY . .
 RUN pnpm run build
 
