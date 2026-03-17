@@ -6,7 +6,7 @@ COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
 ENV NODE_ENV=development
 RUN pnpm install --no-frozen-lockfile
-ARG CACHEBUST=1773729299
+ARG CACHEBUST=1773730261
 COPY . .
 RUN pnpm run build
 
@@ -24,5 +24,5 @@ COPY --from=builder /app/drizzle ./drizzle
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
   CMD wget -qO- http://localhost:3000/api/health || exit 1
-LABEL build=1773730130
+LABEL build=1773730261
 CMD ["node", "dist/index.js"]
