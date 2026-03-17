@@ -90,6 +90,8 @@ async function startServer() {
     await setupVite(app, server);
   } else {
     const { serveStatic } = await import("./serveStatic");
+    // API 404 guard
+    app.use("/api", (_req, res) => { res.status(404).json({error:"not found"}); });
     serveStatic(app);
   }
 
