@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 LABEL build="1773816993"
 WORKDIR /app
 RUN npm install -g pnpm@9
@@ -10,7 +10,7 @@ ARG CACHEBUST=1773730261
 COPY . .
 RUN pnpm run build
 
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 ARG CACHE_BUST=1773816413
 WORKDIR /app
 RUN npm install -g pnpm@9
